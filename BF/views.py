@@ -153,7 +153,8 @@ if not any(arg in sys.argv for arg in ['makemigrations', 'migrate', 'collectstat
     
     # 👇️ THIS IS THE CRITICAL LINE THAT MUST BE CORRECTED
     # .updater(None) prevents the creation of the Updater object, fixing the Python 3.13 crash.
-    telegram_app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).updater(None).build()
+    # BF/views.py (The Fix)
+    telegram_app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).updater(None).build()   
     
     # 2. Import and register handlers
     from movies.bot_handlers import handle_start_command 
