@@ -139,17 +139,31 @@ def download_file_redirect(request, token):
     
     # 5. Redirect the user
     return redirect(telegram_redirect_url)
+# BF/views.py (Correction)
+
+# Make sure you have 'import sys' at the top of the file
+import sys
+# ... other imports ...
+
+# ... after the functional views ...
 
 logger = logging.getLogger(__name__)
 
-# Create the bot application (outside the view)
-telegram_app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).build()
+# New Conditional Logic: Only initialize the bot when running the web server.
+# This prevents the bot from crashing during management commands like 'migrate'
+if not any(arg in sys.argv for arg in ['makemigrations', 'migrate', 'collectstatic', 'runserver']):
+    # Create the bot application
+    telegram_app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).build()
 
-# Import your start handler from the bot logic
-from movies.bot_handlers import handle_start_command
-
-# Register handlers
-telegram_app.add_handler(CommandHandler("start", handle_start_command))
+    # Import and register handlers
+    from movies.bot_handlers import handle_start_command
+    telegram_app.add_handler(CommandHandler("start", handle_start_command))
+else:
+    # During build/migrate, set a placeholder to avoid crashes
+    telegram_app = None
+    # NOTE: You must ensure 'from movies.bot_handlers import handle_start_command' 
+    # is only executed conditionally if it causes an import crash itself.
+    # Given the original log, only Application.builder().build() is the issue.
 
 @csrf_exempt
 async def telegram_webhook_view(request):
