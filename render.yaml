@@ -4,7 +4,7 @@ services:
     env: python
     buildCommand: "./build.sh"
     # UPDATED: Use the new configuration file
-    startCommand: "gunicorn --config gunicorn.conf.py BF.asgi:application"
+    startCommand: "gunicorn BF.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
