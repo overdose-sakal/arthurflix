@@ -122,22 +122,22 @@
         <div class="d-flex flex-column flex-md-row gap-3">
             
             {% if sd_download_url %}
-            <a href="{{ sd_download_url }}" target="_blank" class="btn btn-success btn-lg flex-fill" 
-               style="background-color: #54d400 !important; border-color: #54d400 !important;">
+            <a href="{% url 'download_token' 'SD' movie.slug %}" target="_blank" class="btn btn-success btn-lg flex-fill" 
+               style="background-color: #00c9d4ff !important; border-color: #00c9d4ff !important;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-telegram me-2" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.286 7.771 10.6 5.342c.118-.118.257-.076.326.046.069.122.012.285-.11.407L8.623 8.243l2.235 2.185c.143.14.072.36-.08.432a.235.235 0 0 1-.362-.058L8.286 9.715 5.923 12.01c-.134.131-.352.091-.424-.037a.36.36 0 0 1 .054-.424l2.235-2.185-2.235-2.185c-.134-.131-.094-.352.037-.424a.36.36 0 0 1 .424.054L8.286 7.771z"/>
                 </svg>
-                Download SD (Get File via Bot)
+                Download 480p (Telegram)
             </a>
             {% endif %}
             
             {% if hd_download_url %}
-            <a href="{{ hd_download_url }}" target="_blank" class="btn btn-success btn-lg flex-fill"
-               style="background-color: #54d400 !important; border-color: #54d400 !important;">
+            <a href="{% url 'download_token' 'HD' movie.slug %}" target="_blank" class="btn btn-success btn-lg flex-fill"
+               style="background-color: #00c9d4ff !important; border-color: #00c9d4ff !important;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-telegram me-2" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.286 7.771 10.6 5.342c.118-.118.257-.076.326.046.069.122.012.285-.11.407L8.623 8.243l2.235 2.185c.143.14.072.36-.08.432a.235.235 0 0 1-.362-.058L8.286 9.715 5.923 12.01c-.134.131-.352.091-.424-.037a.36.36 0 0 1 .054-.424l2.235-2.185-2.235-2.185c-.134-.131-.094-.352.037-.424a.36.36 0 0 1 .424.054L8.286 7.771z"/>
                 </svg>
-                Download HD (Get File via Bot)
+                Download 720p (Telegram)
             </a>
             {% endif %}
             

@@ -37,10 +37,12 @@ urlpatterns = [
     path("download/token/<uuid:token>/", download_file_redirect, name="validate_download_token"),
     
     # 2. Token Creation 
-    path("download/<str:quality>/<slug:slug>/", download_token_view, name="generate_download_token"),
+    path("download/<str:quality>/<slug:slug>/", download_token_view, name="download_token"),
+
+    path("dl/<uuid:token>/", download_file_redirect, name="download_file_redirect"),
 
 
-    path("download.html", download_page_view, name="final_download_page"),
+    path("download-page/", download_page_view, name="download_page"),
 
     # Webhook endpoint
     path("telegram/webhook/", telegram_webhook_view, name="telegram_webhook"),
