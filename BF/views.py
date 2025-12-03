@@ -29,23 +29,21 @@ from asgiref.sync import sync_to_async
 logger = logging.getLogger(__name__)
 
 # Simple bot initialization for webhook
-def get_telegram_app():
-    global telegram_app
-    if telegram_app is None:
-        telegram_app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).updater(None).build()
+telegram_app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).build()
+telegram_initialized = False
 
+async def initialize_bot():
+    global telegram_initialized
+    if not telegram_initialized:
         from telegram.ext import CommandHandler
         from movies.bot_handlers import handle_start_command
+        
         telegram_app.add_handler(CommandHandler("start", handle_start_command))
 
-        # IMPORTANT: initialize application
-        import asyncio
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(telegram_app.initialize())
+        await telegram_app.initialize()  # IMPORTANT
+        telegram_initialized = True
 
-        logger.info("✅ Telegram app initialized")
-
-    return telegram_app
+        logger.info("Telegram bot initialized successfully")
 
 
 
@@ -248,24 +246,24 @@ def download_page_view(request):
 
 @csrf_exempt
 async def telegram_webhook_view(request):
-    """
-    Handles incoming Telegram updates via webhook.
-    """
-    if request.method == "POST":
-        try:
-            update_data = json.loads(request.body.decode("utf-8"))
-            update = Update.de_json(update_data, get_telegram_app().bot)
-            
-            # Process the update asynchronously
-            await get_telegram_app().process_update(update)
-            
-            return HttpResponse(status=200)
+    if request.method != "POST":
+        return HttpResponseForbidden("GET not allowed")
 
-        except Exception as e:
-            logger.error(f"Error processing Telegram webhook: {e}")
-            return HttpResponse(status=500)
-    
-    return HttpResponseForbidden('GET requests are not allowed')
+    try:
+        # Initialize bot once
+        await initialize_bot()
+
+        update_data = json.loads(request.body.decode("utf-8"))
+        update = Update.de_json(update_data, telegram_app.bot)
+
+        await telegram_app.process_update(update)
+
+        return HttpResponse(status=200)
+
+    except Exception as e:
+        logger.error(f"Telegram webhook processing failed: {e}")
+        return HttpResponse(status=500)
+
 
 
 # --- REST API VIEWS ---
