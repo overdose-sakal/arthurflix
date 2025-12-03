@@ -29,23 +29,24 @@ from asgiref.sync import sync_to_async
 logger = logging.getLogger(__name__)
 
 # Simple bot initialization for webhook
-telegram_app = None
-
 def get_telegram_app():
-    """Lazy initialization of telegram app"""
     global telegram_app
     if telegram_app is None:
-        # NOTE: Using getattr here is also safer, but assuming settings.TELEGRAM_BOT_TOKEN is present
         telegram_app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).updater(None).build()
-        
-        # Import and register handlers
+
         from telegram.ext import CommandHandler
         from movies.bot_handlers import handle_start_command
         telegram_app.add_handler(CommandHandler("start", handle_start_command))
-        
+
+        # IMPORTANT: initialize application
+        import asyncio
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(telegram_app.initialize())
+
         logger.info("✅ Telegram app initialized")
-    
+
     return telegram_app
+
 
 
 # --- SHRINKURL API CALL FUNCTION (ROBUST) ---
