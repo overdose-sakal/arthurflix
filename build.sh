@@ -11,4 +11,4 @@ python manage.py migrate --noinput && gunicorn BF.wsgi
 
 python manage.py migrate --noinput && \
 echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('sakal', 'sakalytshit@gmail.com', 'Salibill1')" | python manage.py shell && \
-gunicorn YOUR_PROJECT_NAME.wsgi
+gunicorn BF.wsgi
