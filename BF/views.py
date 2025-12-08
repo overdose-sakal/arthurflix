@@ -102,12 +102,58 @@ def category_filter(request, category):
     })
 
 
-# --- DOWNLOAD TOKEN VIEWS (UPDATED FOR BLOG REDIRECTION) ---
+# --- SHRINKEARN HELPER FUNCTION ---
+
+def create_shrinkearn_link(destination_url, alias=None):
+    """
+    Creates a shortened URL using ShrinkEarn API.
+    
+    Args:
+        destination_url: The final destination URL
+        alias: Optional custom alias for the shortened URL
+    
+    Returns:
+        The shortened URL or None if failed
+    """
+    api_url = "https://shrinkearn.com/api"
+    
+    params = {
+        'api': settings.SHRINK_EARN_API_KEY,
+        'url': destination_url,
+    }
+    
+    if alias:
+        params['alias'] = alias
+    
+    try:
+        response = requests.get(api_url, params=params, timeout=10)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        # ShrinkEarn returns the shortened URL in 'shortenedUrl' field
+        if data.get('status') == 'success':
+            shortened_url = data.get('shortenedUrl')
+            logger.info(f"✅ ShrinkEarn link created: {shortened_url}")
+            return shortened_url
+        else:
+            error_msg = data.get('message', 'Unknown error')
+            logger.error(f"❌ ShrinkEarn API error: {error_msg}")
+            return None
+            
+    except requests.exceptions.RequestException as e:
+        logger.error(f"❌ ShrinkEarn API request failed: {str(e)}")
+        return None
+    except Exception as e:
+        logger.error(f"❌ Unexpected error creating ShrinkEarn link: {str(e)}")
+        return None
+
+
+# --- DOWNLOAD TOKEN VIEWS (UPDATED FOR SHRINKEARN) ---
 
 def download_token_view(request, quality, slug):
     """
-    Generates a token and redirects user to TechHawk blog for monetization.
-    User will go through 2 blog pages before getting the file.
+    Generates a token and redirects user through ShrinkEarn for monetization.
     """
     movie = get_object_or_404(Movies, slug=slug)
     quality = quality.upper()
@@ -129,22 +175,29 @@ def download_token_view(request, quality, slug):
         file_id=file_id,
     )
 
-    # 3. Redirect to TechHawk Blog Page 1 with token parameters
-    # The blog will handle the countdown and show ads
-    techhawk_url = (
-        f"https://techhawk.pages.dev/ad-page-1?"
-        f"token={token_instance.token}&"
-        f"title={quote(movie.title)}&"
-        f"quality={quality}"
+    # 3. Build the final destination URL (where user goes after ShrinkEarn)
+    destination_url = request.build_absolute_uri(
+        reverse('download_file_redirect', kwargs={'token': token_instance.token})
     )
     
-    logger.info(f"✅ Redirecting to TechHawk: {techhawk_url}")
-    return redirect(techhawk_url)
+    # 4. Create ShrinkEarn link with optional custom alias
+    # You can customize the alias as needed
+    custom_alias = f"{movie.slug}-{quality.lower()}-{token_instance.token.hex[:8]}"
+    
+    shrinkearn_url = create_shrinkearn_link(destination_url, alias=custom_alias)
+    
+    if shrinkearn_url:
+        logger.info(f"✅ Redirecting to ShrinkEarn: {shrinkearn_url}")
+        return redirect(shrinkearn_url)
+    else:
+        # Fallback: If ShrinkEarn fails, redirect directly
+        logger.warning("⚠️ ShrinkEarn failed, redirecting directly to download")
+        return redirect(destination_url)
 
 
 def download_file_redirect(request, token):
     """
-    Called after the user completes BOTH blog pages.
+    Called after the user completes ShrinkEarn redirection.
     It verifies the token and redirects the user to the file-ready page.
     """
     try:
@@ -172,7 +225,7 @@ def download_file_redirect(request, token):
 def download_page_view(request):
     """
     Renders the final download page (download.html).
-    This shows the Telegram deep link after ad pages are completed.
+    This shows the Telegram deep link after ShrinkEarn is completed.
     """
     token = request.GET.get('token')
     movie_title = request.GET.get('title')
