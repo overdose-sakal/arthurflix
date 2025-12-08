@@ -126,23 +126,43 @@ def create_shrinkearn_link(destination_url, alias=None):
         params['alias'] = alias
     
     try:
+        logger.info(f"🔄 Creating ShrinkEarn link for: {destination_url}")
+        logger.info(f"📝 Request params: api={settings.SHRINK_EARN_API_KEY[:10]}..., url={destination_url}, alias={alias}")
+        
         response = requests.get(api_url, params=params, timeout=10)
+        logger.info(f"📊 Response status code: {response.status_code}")
+        logger.info(f"📄 Response text: {response.text}")
+        
         response.raise_for_status()
         
         data = response.json()
+        logger.info(f"🔍 Response JSON: {data}")
         
-        # ShrinkEarn returns the shortened URL in 'shortenedUrl' field
-        if data.get('status') == 'success':
+        # ShrinkEarn API returns different formats depending on success
+        # Check for various possible response formats
+        if data.get('status') == 'success' and data.get('shortenedUrl'):
+            shortened_url = data.get('shortenedUrl')
+            logger.info(f"✅ ShrinkEarn link created successfully: {shortened_url}")
+            return shortened_url
+        elif 'shortenedUrl' in data:
+            # Sometimes status might not be present but shortenedUrl is
             shortened_url = data.get('shortenedUrl')
             logger.info(f"✅ ShrinkEarn link created: {shortened_url}")
             return shortened_url
-        else:
-            error_msg = data.get('message', 'Unknown error')
+        elif 'error' in data:
+            error_msg = data.get('error', 'Unknown error')
             logger.error(f"❌ ShrinkEarn API error: {error_msg}")
+            return None
+        else:
+            logger.error(f"❌ Unexpected ShrinkEarn API response format: {data}")
             return None
             
     except requests.exceptions.RequestException as e:
         logger.error(f"❌ ShrinkEarn API request failed: {str(e)}")
+        return None
+    except json.JSONDecodeError as e:
+        logger.error(f"❌ Failed to parse ShrinkEarn API response: {str(e)}")
+        logger.error(f"📄 Raw response: {response.text if 'response' in locals() else 'No response'}")
         return None
     except Exception as e:
         logger.error(f"❌ Unexpected error creating ShrinkEarn link: {str(e)}")
@@ -175,16 +195,19 @@ def download_token_view(request, quality, slug):
         file_id=file_id,
     )
 
+    logger.info(f"🎫 Token created: {token_instance.token}")
+
     # 3. Build the final destination URL (where user goes after ShrinkEarn)
     destination_url = request.build_absolute_uri(
         reverse('download_file_redirect', kwargs={'token': token_instance.token})
     )
     
-    # 4. Create ShrinkEarn link with optional custom alias
-    # You can customize the alias as needed
-    custom_alias = f"{movie.slug}-{quality.lower()}-{token_instance.token.hex[:8]}"
+    logger.info(f"🎯 Destination URL: {destination_url}")
     
-    shrinkearn_url = create_shrinkearn_link(destination_url, alias=custom_alias)
+    # 4. Create ShrinkEarn link without alias (more reliable)
+    # You can add alias back later once basic version works
+    
+    shrinkearn_url = create_shrinkearn_link(destination_url, alias=None)
     
     if shrinkearn_url:
         logger.info(f"✅ Redirecting to ShrinkEarn: {shrinkearn_url}")
@@ -192,6 +215,7 @@ def download_token_view(request, quality, slug):
     else:
         # Fallback: If ShrinkEarn fails, redirect directly
         logger.warning("⚠️ ShrinkEarn failed, redirecting directly to download")
+        logger.warning("⚠️ THIS SHOULD NOT HAPPEN - Check logs above for errors")
         return redirect(destination_url)
 
 
@@ -200,19 +224,25 @@ def download_file_redirect(request, token):
     Called after the user completes ShrinkEarn redirection.
     It verifies the token and redirects the user to the file-ready page.
     """
+    logger.info(f"📥 User landed on download_file_redirect with token: {token}")
+    
     try:
         token_instance = get_object_or_404(DownloadToken, token=token)
     except Http404:
+        logger.error(f"❌ Invalid token requested: {token}")
         return render(request, 'download_error.html', {
             'error_message': 'Invalid or expired download link. Please get a new link from the movie page.'
         }, status=410)
 
     # Check if the token is still valid (not expired)
     if not token_instance.is_valid():
+        logger.warning(f"⏰ Expired token: {token}")
         token_instance.delete()
         return render(request, 'download_error.html', {
             'error_message': 'Your download link has expired. Please get a new link from the movie page.'
         }, status=410)
+    
+    logger.info(f"✅ Valid token, redirecting to download page")
     
     # Redirect to final download page with Telegram deep link
     return redirect(
@@ -230,6 +260,8 @@ def download_page_view(request):
     token = request.GET.get('token')
     movie_title = request.GET.get('title')
     quality = request.GET.get('quality')
+    
+    logger.info(f"📄 Download page view: token={token}, title={movie_title}, quality={quality}")
     
     if not token or not movie_title or not quality:
         return render(request, 'download_error.html', {
