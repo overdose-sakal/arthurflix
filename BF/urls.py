@@ -4,6 +4,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from django.contrib import admin
 from . import views
+from django.views.static import serve
 
 # NEW: Import ALL necessary views from the project-level views.py
 from .views import (
@@ -47,4 +48,10 @@ urlpatterns = [
     path("telegram/webhook/", telegram_webhook_view, name="telegram_webhook"),
 
     path("health/", health),
+
+    path("sw.js", serve, {
+        "document_root": settings.STATIC_ROOT,
+        "path": "sw.js",
+    }),
+
 ]
