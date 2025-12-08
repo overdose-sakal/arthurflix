@@ -5,6 +5,7 @@ from rest_framework.routers import DefaultRouter
 from django.contrib import admin
 from . import views
 from django.views.static import serve
+from django.conf import settings
 
 # NEW: Import ALL necessary views from the project-level views.py
 from .views import (
