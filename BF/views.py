@@ -267,6 +267,7 @@ def download_page_view(request):
     """
     Renders the final download page (download.html).
     This shows the Telegram deep link after ShrinkEarn is completed.
+    Now properly checks what's available before showing buttons.
     """
     token = request.GET.get('token')
     movie_title = request.GET.get('title')
@@ -284,13 +285,32 @@ def download_page_view(request):
         token_instance = get_object_or_404(DownloadToken, token=token)
         movie = token_instance.movie
         
-        # Generate or retrieve direct download token
-        direct_token = get_or_create_direct_download_token(movie, quality)
-        direct_download_url = request.build_absolute_uri(
-            reverse('direct_download_redirect', kwargs={'token': direct_token.token})
-        ) if direct_token else None
+        # Check what's actually available for this movie
+        quality_upper = quality.upper()
+        has_telegram = False
+        has_direct_link = False
+        
+        if quality_upper == 'SD':
+            has_telegram = bool(movie.SD_telegram_file_id)
+            has_direct_link = bool(movie.SD_link)
+        elif quality_upper == 'HD':
+            has_telegram = bool(movie.HD_telegram_file_id)
+            has_direct_link = bool(movie.HD_link)
+        
+        # Only generate direct download token if direct link actually exists
+        direct_download_url = None
+        if has_direct_link:
+            direct_token = get_or_create_direct_download_token(movie, quality)
+            if direct_token:
+                direct_download_url = request.build_absolute_uri(
+                    reverse('direct_download_redirect', kwargs={'token': direct_token.token})
+                )
+        
+        logger.info(f"✅ Availability check: Telegram={has_telegram}, Direct={has_direct_link}")
         
     except Http404:
+        has_telegram = False
+        has_direct_link = False
         direct_download_url = None
     
     bot_username = getattr(settings, 'TELEGRAM_BOT_USERNAME', 'YourBotUsername_placeholder')
@@ -301,6 +321,8 @@ def download_page_view(request):
         'quality': quality,
         'bot_username': bot_username,
         'telegram_deep_link': f"https://t.me/{bot_username}?start={token}",
+        'has_telegram': has_telegram,
+        'has_direct_link': has_direct_link,
         'direct_download_url': direct_download_url,
     }
     
