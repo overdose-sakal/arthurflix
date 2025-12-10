@@ -73,9 +73,9 @@ def Home(request):
 def Movie(request, slug):
     movie = get_object_or_404(Movies, slug=slug)
     
-    # Pass the download status to the template
-    sd_download_url = bool(movie.SD_telegram_file_id)
-    hd_download_url = bool(movie.HD_telegram_file_id)
+    # Check if download is available via Telegram file_id OR direct link
+    sd_download_url = bool(movie.SD_telegram_file_id or movie.SD_link)
+    hd_download_url = bool(movie.HD_telegram_file_id or movie.HD_link)
     
     return render(request, "movie_detail.html", {
         "movie": movie,
@@ -174,25 +174,39 @@ def create_shrinkearn_link(destination_url, alias=None):
 def download_token_view(request, quality, slug):
     """
     Generates a token and redirects user through ShrinkEarn for monetization.
+    Now supports both Telegram file_id AND direct links.
     """
     movie = get_object_or_404(Movies, slug=slug)
     quality = quality.upper()
 
-    # 1. Check file availability
+    # 1. Check file availability (Telegram file_id OR direct link)
     file_id = None
-    if quality == 'SD' and movie.SD_telegram_file_id:
-        file_id = movie.SD_telegram_file_id
-    elif quality == 'HD' and movie.HD_telegram_file_id:
-        file_id = movie.HD_telegram_file_id
-    else:
-        logger.warning(f"Download link requested for {slug} ({quality}) but file_id is missing.")
+    has_telegram = False
+    has_direct_link = False
+    
+    if quality == 'SD':
+        if movie.SD_telegram_file_id:
+            file_id = movie.SD_telegram_file_id
+            has_telegram = True
+        if movie.SD_link:
+            has_direct_link = True
+    elif quality == 'HD':
+        if movie.HD_telegram_file_id:
+            file_id = movie.HD_telegram_file_id
+            has_telegram = True
+        if movie.HD_link:
+            has_direct_link = True
+    
+    # If neither Telegram nor direct link is available, show error
+    if not has_telegram and not has_direct_link:
+        logger.warning(f"Download link requested for {slug} ({quality}) but no file_id or direct link available.")
         return HttpResponseForbidden("Download link is not available for this quality.")
 
-    # 2. Create the Download Token
+    # 2. Create the Download Token (use file_id if available, otherwise use a placeholder)
     token_instance = DownloadToken.objects.create(
         movie=movie, 
         quality=quality,
-        file_id=file_id,
+        file_id=file_id or 'direct_link_only',  # Placeholder if only direct link exists
     )
 
     logger.info(f"🎫 Token created: {token_instance.token}")
@@ -204,7 +218,7 @@ def download_token_view(request, quality, slug):
     
     logger.info(f"🎯 Destination URL: {destination_url}")
     
-    # 4. Create ShrinkEarn link without alias (more reliable)
+    # 4. Create ShrinkEarn link
     shrinkearn_url = create_shrinkearn_link(destination_url, alias=None)
     
     if shrinkearn_url:
@@ -213,7 +227,6 @@ def download_token_view(request, quality, slug):
     else:
         # Fallback: If ShrinkEarn fails, redirect directly
         logger.warning("⚠️ ShrinkEarn failed, redirecting directly to download")
-        logger.warning("⚠️ THIS SHOULD NOT HAPPEN - Check logs above for errors")
         return redirect(destination_url)
 
 
