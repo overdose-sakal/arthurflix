@@ -4,6 +4,8 @@ from autoslug import AutoSlugField
 import uuid
 from datetime import timedelta
 from django.utils import timezone
+import secrets
+import string
 
 
 
@@ -90,6 +92,60 @@ class DownloadToken(models.Model):
 
     def __str__(self):
         return f"Token {self.token} ({self.movie.title} - {self.quality}) (Expires: {self.expires_at.strftime('%Y-%m-%d %H:%M')})"
+
+
+# --- NEW: DIRECT DOWNLOAD TOKEN MODEL ---
+class DirectDownloadToken(models.Model):
+    """
+    Stores a temporary short token for direct download links.
+    Expires after 24 hours.
+    """
+    token = models.CharField(max_length=12, unique=True, db_index=True)
+    movie = models.ForeignKey(Movies, on_delete=models.CASCADE)
+    quality = models.CharField(max_length=5)  # 'SD' or 'HD'
+    original_link = models.URLField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    access_count = models.IntegerField(default=0)  # Track how many times accessed
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['token']),
+            models.Index(fields=['expires_at']),
+        ]
+    
+    def save(self, *args, **kwargs):
+        # Generate unique short token on creation
+        if not self.token:
+            self.token = self.generate_unique_token()
+        
+        # Set expiration to 24 hours from creation
+        if not self.id and not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(hours=24)
+        
+        super().save(*args, **kwargs)
+    
+    @staticmethod
+    def generate_unique_token():
+        """Generate a unique 12-character alphanumeric token."""
+        chars = string.ascii_letters + string.digits
+        while True:
+            token = ''.join(secrets.choice(chars) for _ in range(12))
+            if not DirectDownloadToken.objects.filter(token=token).exists():
+                return token
+    
+    def is_valid(self):
+        """Check if the token has expired."""
+        return timezone.now() < self.expires_at
+    
+    def increment_access(self):
+        """Increment access counter."""
+        self.access_count += 1
+        self.save(update_fields=['access_count'])
+    
+    def __str__(self):
+        return f"{self.token} - {self.movie.title} ({self.quality}) - Expires: {self.expires_at.strftime('%Y-%m-%d %H:%M')}"
 
 
 # Add this to the end of movies/models.py

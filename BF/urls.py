@@ -16,6 +16,7 @@ from .views import (
     download_file_redirect, 
     telegram_webhook_view,
     download_page_view,
+    direct_download_redirect,
 )
 
 from django.http import HttpResponse
@@ -54,5 +55,7 @@ urlpatterns = [
         "document_root": settings.STATIC_ROOT,
         "path": "sw.js",
     }),
+
+    path("direct/<str:token>/", direct_download_redirect, name="direct_download_redirect"),
 
 ]

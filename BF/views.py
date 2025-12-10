@@ -16,7 +16,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # Import models and utilities
-from movies.models import Movies, DownloadToken
+from movies.models import Movies, DownloadToken, DirectDownloadToken
 from movies.telegram_utils import TelegramFileManager
 from movies.serializers import MovieSerializer
 
@@ -126,8 +126,8 @@ def create_shrinkearn_link(destination_url, alias=None):
         params['alias'] = alias
     
     try:
-        logger.info(f"🔄 Creating ShrinkEarn link for: {destination_url}")
-        logger.info(f"📝 Request params: api={settings.SHRINK_EARN_API_KEY[:10]}..., url={destination_url}, alias={alias}")
+        logger.info(f"📄 Creating ShrinkEarn link for: {destination_url}")
+        logger.info(f"🔑 Request params: api={settings.SHRINK_EARN_API_KEY[:10]}..., url={destination_url}, alias={alias}")
         
         response = requests.get(api_url, params=params, timeout=10)
         logger.info(f"📊 Response status code: {response.status_code}")
@@ -205,8 +205,6 @@ def download_token_view(request, quality, slug):
     logger.info(f"🎯 Destination URL: {destination_url}")
     
     # 4. Create ShrinkEarn link without alias (more reliable)
-    # You can add alias back later once basic version works
-    
     shrinkearn_url = create_shrinkearn_link(destination_url, alias=None)
     
     if shrinkearn_url:
@@ -268,6 +266,20 @@ def download_page_view(request):
             'error_message': 'Missing download parameters.'
         }, status=400)
     
+    # Get the token instance to retrieve movie details
+    try:
+        token_instance = get_object_or_404(DownloadToken, token=token)
+        movie = token_instance.movie
+        
+        # Generate or retrieve direct download token
+        direct_token = get_or_create_direct_download_token(movie, quality)
+        direct_download_url = request.build_absolute_uri(
+            reverse('direct_download_redirect', kwargs={'token': direct_token.token})
+        ) if direct_token else None
+        
+    except Http404:
+        direct_download_url = None
+    
     bot_username = getattr(settings, 'TELEGRAM_BOT_USERNAME', 'YourBotUsername_placeholder')
     
     context = {
@@ -276,9 +288,80 @@ def download_page_view(request):
         'quality': quality,
         'bot_username': bot_username,
         'telegram_deep_link': f"https://t.me/{bot_username}?start={token}",
+        'direct_download_url': direct_download_url,
     }
     
     return render(request, 'download.html', context)
+
+
+# --- NEW: DIRECT DOWNLOAD FUNCTIONS ---
+
+def get_or_create_direct_download_token(movie, quality):
+    """
+    Get existing valid token or create new one for direct download.
+    """
+    # Get the original link from database
+    original_link = None
+    if quality.upper() == 'SD' and movie.SD_link:
+        original_link = movie.SD_link
+    elif quality.upper() == 'HD' and movie.HD_link:
+        original_link = movie.HD_link
+    
+    if not original_link:
+        logger.warning(f"No direct link available for {movie.title} ({quality})")
+        return None
+    
+    # Check for existing valid token
+    existing_token = DirectDownloadToken.objects.filter(
+        movie=movie,
+        quality=quality.upper(),
+        expires_at__gt=timezone.now()
+    ).first()
+    
+    if existing_token:
+        logger.info(f"♻️ Reusing existing direct download token: {existing_token.token}")
+        return existing_token
+    
+    # Create new token
+    new_token = DirectDownloadToken.objects.create(
+        movie=movie,
+        quality=quality.upper(),
+        original_link=original_link
+    )
+    
+    logger.info(f"✨ Created new direct download token: {new_token.token}")
+    return new_token
+
+
+def direct_download_redirect(request, token):
+    """
+    Validates the direct download token and redirects to the actual file.
+    """
+    logger.info(f"🔗 Direct download requested with token: {token}")
+    
+    try:
+        download_token = get_object_or_404(DirectDownloadToken, token=token)
+    except Http404:
+        logger.error(f"❌ Invalid direct download token: {token}")
+        return render(request, 'download_error.html', {
+            'error_message': 'Invalid or expired direct download link. Please get a new link from the movie page.'
+        }, status=410)
+    
+    # Check if token is still valid
+    if not download_token.is_valid():
+        logger.warning(f"⏰ Expired direct download token: {token}")
+        download_token.delete()
+        return render(request, 'download_error.html', {
+            'error_message': 'Your direct download link has expired (24 hours). Please get a new link from the movie page.'
+        }, status=410)
+    
+    # Increment access counter
+    download_token.increment_access()
+    
+    logger.info(f"✅ Redirecting to original link: {download_token.original_link}")
+    
+    # Redirect to the actual file
+    return redirect(download_token.original_link)
 
 
 # --- TELEGRAM WEBHOOK VIEW ---
