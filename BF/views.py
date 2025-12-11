@@ -102,79 +102,12 @@ def category_filter(request, category):
     })
 
 
-# --- SHRINKEARN HELPER FUNCTION ---
-
-def create_shrinkearn_link(destination_url, alias=None):
-    """
-    Creates a shortened URL using ShrinkEarn API.
-    
-    Args:
-        destination_url: The final destination URL
-        alias: Optional custom alias for the shortened URL
-    
-    Returns:
-        The shortened URL or None if failed
-    """
-    api_url = "https://shrinkearn.com/api"
-    
-    params = {
-        'api': settings.SHRINK_EARN_API_KEY,
-        'url': destination_url,
-    }
-    
-    if alias:
-        params['alias'] = alias
-    
-    try:
-        logger.info(f"📄 Creating ShrinkEarn link for: {destination_url}")
-        logger.info(f"🔑 Request params: api={settings.SHRINK_EARN_API_KEY[:10]}..., url={destination_url}, alias={alias}")
-        
-        response = requests.get(api_url, params=params, timeout=10)
-        logger.info(f"📊 Response status code: {response.status_code}")
-        logger.info(f"📄 Response text: {response.text}")
-        
-        response.raise_for_status()
-        
-        data = response.json()
-        logger.info(f"🔍 Response JSON: {data}")
-        
-        # ShrinkEarn API returns different formats depending on success
-        # Check for various possible response formats
-        if data.get('status') == 'success' and data.get('shortenedUrl'):
-            shortened_url = data.get('shortenedUrl')
-            logger.info(f"✅ ShrinkEarn link created successfully: {shortened_url}")
-            return shortened_url
-        elif 'shortenedUrl' in data:
-            # Sometimes status might not be present but shortenedUrl is
-            shortened_url = data.get('shortenedUrl')
-            logger.info(f"✅ ShrinkEarn link created: {shortened_url}")
-            return shortened_url
-        elif 'error' in data:
-            error_msg = data.get('error', 'Unknown error')
-            logger.error(f"❌ ShrinkEarn API error: {error_msg}")
-            return None
-        else:
-            logger.error(f"❌ Unexpected ShrinkEarn API response format: {data}")
-            return None
-            
-    except requests.exceptions.RequestException as e:
-        logger.error(f"❌ ShrinkEarn API request failed: {str(e)}")
-        return None
-    except json.JSONDecodeError as e:
-        logger.error(f"❌ Failed to parse ShrinkEarn API response: {str(e)}")
-        logger.error(f"📄 Raw response: {response.text if 'response' in locals() else 'No response'}")
-        return None
-    except Exception as e:
-        logger.error(f"❌ Unexpected error creating ShrinkEarn link: {str(e)}")
-        return None
-
-
-# --- DOWNLOAD TOKEN VIEWS (UPDATED FOR SHRINKEARN) ---
+# --- DOWNLOAD TOKEN VIEWS (DIRECT REDIRECT - NO SHRINKEARN) ---
 
 def download_token_view(request, quality, slug):
     """
-    Generates a token and redirects user through ShrinkEarn for monetization.
-    Now supports both Telegram file_id AND direct links.
+    Generates a token and redirects user DIRECTLY to download page.
+    No ShrinkEarn redirection - goes straight to download.html.
     """
     movie = get_object_or_404(Movies, slug=slug)
     quality = quality.upper()
@@ -211,29 +144,23 @@ def download_token_view(request, quality, slug):
 
     logger.info(f"🎫 Token created: {token_instance.token}")
 
-    # 3. Build the final destination URL (where user goes after ShrinkEarn)
-    destination_url = request.build_absolute_uri(
-        reverse('download_file_redirect', kwargs={'token': token_instance.token})
+    # 3. Redirect DIRECTLY to download page (no ShrinkEarn)
+    download_url = (
+        f"/download.html?token={token_instance.token}&"
+        f"title={quote(movie.title)}&"
+        f"quality={quality}"
     )
     
-    logger.info(f"🎯 Destination URL: {destination_url}")
-    
-    # 4. Create ShrinkEarn link
-    shrinkearn_url = create_shrinkearn_link(destination_url, alias=None)
-    
-    if shrinkearn_url:
-        logger.info(f"✅ Redirecting to ShrinkEarn: {shrinkearn_url}")
-        return redirect(shrinkearn_url)
-    else:
-        # Fallback: If ShrinkEarn fails, redirect directly
-        logger.warning("⚠️ ShrinkEarn failed, redirecting directly to download")
-        return redirect(destination_url)
+    logger.info(f"✅ Redirecting directly to download page: {download_url}")
+    return redirect(download_url)
 
 
 def download_file_redirect(request, token):
     """
     Called after the user completes ShrinkEarn redirection.
     It verifies the token and redirects the user to the file-ready page.
+    NOTE: This may no longer be used if you remove ShrinkEarn completely,
+    but keeping it for backward compatibility with old links.
     """
     logger.info(f"📥 User landed on download_file_redirect with token: {token}")
     
@@ -266,8 +193,7 @@ def download_file_redirect(request, token):
 def download_page_view(request):
     """
     Renders the final download page (download.html).
-    This shows the Telegram deep link after ShrinkEarn is completed.
-    Now properly checks what's available before showing buttons.
+    This shows the Telegram deep link and/or direct download button.
     """
     token = request.GET.get('token')
     movie_title = request.GET.get('title')
@@ -329,7 +255,7 @@ def download_page_view(request):
     return render(request, 'download.html', context)
 
 
-# --- NEW: DIRECT DOWNLOAD FUNCTIONS ---
+# --- DIRECT DOWNLOAD FUNCTIONS ---
 
 def get_or_create_direct_download_token(movie, quality):
     """

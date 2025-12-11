@@ -1,190 +1,219 @@
 {% load static %}
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script
-  type="text/javascript"
-  src="//pl28220970.effectivegatecpm.com/2c/e2/8a/2ce28ae76873046b1947c80e35b6aa86.js"
-></script>
-    <script>(function(s){s.dataset.zone='10296014',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <script>(function(s){s.dataset.zone='10296027',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BollyFun - Download Movies & Shows for free!</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <title>BollyFun - {{ category_name|default:"Browse All" }}</title>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="{% static 'index.css' %}">
-<style>
-    
-</style>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
+    <style>
+        /* Shared Blackout Gradient Theme */
+        :root {
+            --bg-deep: #000000; 
+            --bg-surface: #0a0a0a; 
+            --text-main: #ffffff;
+            --text-muted: #525252;
+            --gradient-start: #ff0077; 
+            --gradient-end: #00eaff; 
+            --main-gradient: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        }
 
-</head>
-<body class="bg-dark">
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
 
+        /* Gradient & Animation Utility Classes */
+        .gradient-text {
+            background: var(--main-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-gradient {
+            background: var(--main-gradient); color: var(--bg-deep); border: none; font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative; z-index: 2;
+        }
+        .btn-gradient:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 15px var(--gradient-end);
+        }
 
+        @keyframes rotateGradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
+        /* Navbar */
+        .navbar { background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid #111; padding: 1rem 0; }
+        .navbar-brand span { 
+            font-weight: 700; 
+            color: var(--gradient-start); 
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+        }
+        .nav-link { color: var(--text-muted) !important; margin-left: 1rem; }
+        .nav-link:hover { color: var(--text-main) !important; }
 
+        /* Header */
+        .header-section { 
+            padding-top: 120px; 
+            margin-bottom: 30px; 
+            animation: fadeIn 0.6s ease-out;
+        }
+        .section-title {
+            font-weight: 800;
+            border-bottom: 3px solid var(--gradient-start);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
 
+        /* Search Section */
+        .search-input {
+            background: var(--bg-surface);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px 0 0 8px; 
+            height: 48px;
+        }
+        .search-input:focus {
+            border-color: var(--gradient-end);
+            box-shadow: 0 0 10px rgba(0, 234, 255, 0.2);
+            outline: none;
+        }
 
-<div id="header">
+        /* Cards & Grid (Matched to Index.html) */
+        .movie-col { opacity: 0; transform: translateY(20px); animation: fadeUp 0.6s ease-out forwards; }
+        {% for i in "123456"|make_list %}
+        .movie-col:nth-child({{ i }}) { animation-delay: 0.{{ i }}s; }
+        {% endfor %}
 
-<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-<div class="fixed-top">
-  <header class="topbar">
-      <div class="container">
-        <div class="row">
-          </div>
-      </div>
-  </header>
-  <nav class="navbar navbar-expand-lg navbar-dark mx-background-top-linear pt-3">
-    <div class="container">
-<a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-    <img src="{% static 'images/bf_logo.png' %}" 
-         alt="BollyFun Logo"
-         class="img-fluid"
-         style="height: 35px; width: auto; margin-right: 5px;">
-    <span style="font-family: 'Georgia', serif; font-size: 1.5rem; text-transform: uppercase; color: black;">BollyFun</span>
-</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-
-        <ul class="navbar-nav ml-auto">
-
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url "home" %}">Home
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="/category/movies/">Movies</a>
-          </li>
-
-         <li class="nav-item">
-            <a class="nav-link" href="/category/tv/">TV Shows</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="/category/anime/">Anime</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#">Report</a>
-          </li>
-
-          </ul>
-      </div>
-    </div>
-  </nav>
-</div>
-</div> <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-12">
-      <form method="get" class="input-group">
-            <input
-            type="search"
-            class="form-control my-3"
-            name="q"
-            placeholder="Search for anything"
-            value="{{ query }}"
-            />
-            <button class="btn btn-success my-3" type="submit">Search</button>
-        </form>
-
-            </div>
-        </div>
-
+        .movie-card {
+            background: var(--bg-surface); border-radius: 8px; overflow: hidden; position: relative;
+            transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.5); height: 100%;
+        }
+        .movie-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px var(--gradient-end);
+            border: 1px solid var(--gradient-start);
+        }
+        .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .card-body { padding: 10px; }
         
-<div class="row gx-2 gy-2">
-{% for movie in movies %}
-<div class="col-6 col-md-4 col-lg-3">
-    <a href="{% url 'movie_detail' slug=movie.slug %}" style="text-decoration: none;">
-<div class="rounded bg-secondary px-2 pb-3 h-100 d-flex flex-column" 
-     style="cursor: pointer; transition: transform 0.2s;"
-     onmouseover="this.style.transform='scale(1.05)'"
-     onmouseout="this.style.transform='scale(1)'">
-    <img class="img-fluid mt-2 rounded" src="{{ movie.dp }}" alt="{{ movie.title }}">
-    <h4 class="text-light mt-2 flex-grow-1">{{ movie.title }}</h4>
-</div>
-    </a>
-</div>
-{% endfor %}
-</div>
+        .movie-title { 
+            font-size: 0.9rem; font-weight: 600; color: #fff; margin: 0; 
+            white-space: normal; 
+            display: -webkit-box;
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+            height: 2.5rem;
+        }
 
+        /* Pagination */
+        .pagination .page-link { background: var(--bg-surface); border: 1px solid #333; color: var(--text-muted); border-radius: 6px; }
+        .pagination .page-item.active .page-link { background: var(--main-gradient); border-color: var(--gradient-end); color: white; }
 
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <span>BOLLYFUN</span>
+        </a>
+        <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
+            <i class="bi bi-list text-white"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/movies/">Movies</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/tv/">TV Shows</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/anime/">Anime</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container header-section">
+    <h3 class="section-title text-uppercase">{{ category_name|default:"Browse All" }}</h3>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <form method="get" class="d-flex">
+                <input 
+                    type="search" 
+                    class="form-control search-input" 
+                    name="q" 
+                    placeholder="Search title, genre, or year..." 
+                    value="{{ query }}" 
+                    style="flex-grow: 1;"
+                >
+                <button 
+                    class="btn btn-gradient" 
+                    type="submit" 
+                    style="padding: 12px; border-radius: 0 8px 8px 0; font-weight: 700; height: 48px; width: 48px;"
+                >
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
     </div>
 
+    <div class="row g-4 mt-4">
+        {% for movie in movies %}
+        <div class="col-6 col-md-4 col-lg-3 movie-col">
+            <a href="{% url 'movie_detail' slug=movie.slug %}" class="text-decoration-none">
+                <div class="movie-card">
+                    <img src="{{ movie.dp }}" alt="{{ movie.title }}" loading="lazy">
+                    <div class="card-body">
+                        <h4 class="movie-title">{{ movie.title }}</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
 
-<div class="container text-center my-3">
-    <p class="text-light">
-        Page {{ movies.number }} of {{ movies.paginator.num_pages }} 
-        ({{ movies.paginator.count }} total items)
-    </p>
-</div>
-
-
-<div class="container d-flex justify-content-center">
-    <div class="row my-2">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination">
+    <div class="container text-center my-5">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
                 {% if movies.has_previous %}
-                <li class="page-item">
-                    <a style="background-color: gray !important; color: white !important;" 
-                       onmouseover="this.style.backgroundColor='white'; this.style.color='black';" 
-                       onmouseout="this.style.backgroundColor='gray'; this.style.color='white';"
-                       class="page-link" href="?page={{ movies.previous_page_number }}">Previous</a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <a style="background-color: #555 !important; color: #999 !important; cursor: not-allowed;"
-                       class="page-link" href="#" tabindex="-1">Previous</a>
-                </li>
+                <li class="page-item"><a class="page-link" href="?page={{ movies.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
                 {% endif %}
 
                 {% for num in movies.paginator.page_range %}
                     {% if movies.number == num %}
-                    <li class="page-item active">
-                        <a style="background-color: #54d400 !important; color: white !important; border-color: #54d400;"
-                           class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
                     {% elif num > movies.number|add:'-3' and num < movies.number|add:'3' %}
-                    <li class="page-item">
-                        <a style="background-color: gray !important; color: white !important;" 
-                           onmouseover="this.style.backgroundColor='white'; this.style.color='black';" 
-                           onmouseout="this.style.backgroundColor='gray'; this.style.color='white';"
-                           class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
                     {% endif %}
                 {% endfor %}
 
                 {% if movies.has_next %}
-                <li class="page-item">
-                    <a style="background-color: gray !important; color: white !important;" 
-                       onmouseover="this.style.backgroundColor='white'; this.style.color='black';" 
-                       onmouseout="this.style.backgroundColor='gray'; this.style.color='white';"
-                       class="page-link" href="?page={{ movies.next_page_number }}">Next</a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <a style="background-color: #555 !important; color: #999 !important; cursor: not-allowed;"
-                       class="page-link" href="#" tabindex="-1">Next</a>
-                </li>
+                <li class="page-item"><a class="page-link" href="?page={{ movies.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
                 {% endif %}
             </ul>
         </nav>
     </div>
 </div>
 
-    
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
