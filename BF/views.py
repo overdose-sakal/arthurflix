@@ -38,6 +38,10 @@ from telegram.ext import Application, CommandHandler
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+from datetime import timedelta # <-- NEW: Added for standard token expiry management
+# ⬇️ ADD THIS IMPORT ⬇️
+from django.views.decorators.cache import never_cache
+
 telegram_app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).build()
 initialized = False
 
@@ -58,6 +62,7 @@ async def init_bot():
 # --- CORE VIEWS ---
 
 @membership_required # <-- NEW: Membership required to view home page
+@never_cache 
 def Home(request):
     query = request.GET.get("q", "")
     if query:
@@ -89,6 +94,7 @@ def Movie(request, slug):
     })
 
 @membership_required # <-- NEW: Membership required to view category filter
+@never_cache 
 def category_filter(request, category):
     query = request.GET.get("q", "")
     movies = Movies.objects.filter(type=category)

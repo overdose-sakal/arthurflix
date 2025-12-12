@@ -12,6 +12,7 @@ from django.contrib.auth.forms import UserCreationForm # NEW Import
 
 from .models import MembershipKey 
 
+
 # --- Decorator for Two-Step Access Control ---
 
 def membership_required(view_func):

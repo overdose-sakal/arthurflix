@@ -110,6 +110,26 @@
             color: var(--text-muted);
             font-weight: 600;
         }
+
+        .form-control {
+    background-color: var(--bg-surface);
+    color: var(--text-main); /* Makes typed letters white/light */
+    border: 1px solid var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    background-color: var(--bg-surface);
+    color: var(--text-main);
+    border-color: var(--gradient-end); /* Nice focus glow */
+    box-shadow: 0 0 0 0.25rem rgba(0, 234, 255, 0.25);
+}
+
+/* This targets the placeholder text specifically */
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4); /* Light grey placeholder */
+    opacity: 1; /* Override default browser opacity if necessary */
+}
     </style>
 </head>
 <body>

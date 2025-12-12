@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -134,6 +135,17 @@
             70% { transform: scale(1.05); }
             100% { transform: scale(1); opacity: 1; }
         }
+
+.site-title-gradient {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 1.5rem; /* Adjust size as needed */
+    background: var(--main-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent; /* Fallback for browsers */
+}
     </style>
 </head>
 <body>
@@ -143,6 +155,11 @@
             <div class="icon-box">
                 <i class="bi bi-shield-lock-fill"></i>
             </div>
+
+            <div class="logo-wrapper d-inline-flex align-items-center mb-4">
+        {% comment %} <img src="{% static 'images/bf_logo.png' %}" alt="BollyFun Logo" class="d-inline-block align-text-top me-2" style="height: 40px;"> {% endcomment %}
+        <h1 class="site-title-gradient m-0">BOLLYFUN</h1>
+    </div>
             
             <h2 class="text-white">SECURE ACCESS GRANTED</h2>
             <div class="quality-pill">{{ quality }} QUALITY</div>
