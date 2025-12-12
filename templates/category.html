@@ -5,7 +5,7 @@
     
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BollyFun - {{ category_name|default:"Browse All" }}</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -91,6 +91,28 @@
             outline: none;
         }
 
+        /* --- MOBILE RESPONSIVENESS FIX --- */
+        @media (max-width: 576px) {
+            .section-title { font-size: 1.5rem; }
+            
+            /* Shrink search bar input */
+            .search-input {
+                padding: 8px 15px !important; /* Smaller padding */
+                font-size: 0.9rem !important; /* Smaller font */
+                height: 40px !important;
+            }
+            /* Shrink search button */
+            .btn-gradient {
+                height: 40px !important;
+                width: 40px !important;
+                padding: 8px !important;
+            }
+            .btn-gradient i { font-size: 0.9rem !important; }
+            
+            /* Shrink buttons for better fit in the navbar */
+            .btn-sm { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
+        }
+
         /* Cards & Grid (Matched to Index.html) */
         .movie-col { opacity: 0; transform: translateY(20px); animation: fadeUp 0.6s ease-out forwards; }
         {% for i in "123456"|make_list %}
@@ -141,11 +163,23 @@
             <i class="bi bi-list text-white"></i>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="/category/movies/">Movies</a></li>
                 <li class="nav-item"><a class="nav-link" href="/category/tv/">TV Shows</a></li>
                 <li class="nav-item"><a class="nav-link" href="/category/anime/">Anime</a></li>
+                
+                <li class="nav-item ms-3">
+                    {% if user.is_authenticated %}
+                    <a class="btn btn-sm btn-gradient" href="{% url 'logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                    {% else %}
+                    <a class="btn btn-sm btn-gradient" href="{% url 'login' %}">
+                        <i class="bi bi-person-circle"></i> Login
+                    </a>
+                    {% endif %}
+                </li>
             </ul>
         </div>
     </div>

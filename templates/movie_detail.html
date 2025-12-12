@@ -262,10 +262,10 @@
                 <h5 class="mb-3 fw-bold gradient-text">SCREENSHOTS</h5>
                 <div class="row g-2">
                     {% if movie.screenshot1 %}
-                    <div class="col-6"><img src="{{ movie.screenshot1 }}" class="img-fluid rounded" style="border: 1px solid #1a1a1a;" onclick="window.open(this.src)" loading="lazy"></div>
+                    <div class="col-12 col-md-6"><img src="{{ movie.screenshot1 }}" class="img-fluid rounded" style="border: 1px solid #1a1a1a;" onclick="window.open(this.src)" loading="lazy"></div>
                     {% endif %}
                     {% if movie.screenshot2 %}
-                    <div class="col-6"><img src="{{ movie.screenshot2 }}" class="img-fluid rounded" style="border: 1px solid #1a1a1a;" onclick="window.open(this.src)" loading="lazy"></div>
+                    <div class="col-12 col-md-6"><img src="{{ movie.screenshot2 }}" class="img-fluid rounded" style="border: 1px solid #1a1a1a;" onclick="window.open(this.src)" loading="lazy"></div>
                     {% endif %}
                 </div>
             </div>

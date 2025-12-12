@@ -7,6 +7,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import quote  
+from datetime import timedelta # <-- NEW: Added for standard token expiry management
 
 # Import necessary third-party libraries
 import requests 
@@ -19,6 +20,9 @@ from rest_framework.response import Response
 from movies.models import Movies, DownloadToken, DirectDownloadToken
 from movies.telegram_utils import TelegramFileManager
 from movies.serializers import MovieSerializer
+
+# NEW IMPORTS FOR MEMBERSHIP KEY SYSTEM
+from users.views import membership_required # <-- NEW
 
 import json
 import logging
@@ -53,6 +57,7 @@ async def init_bot():
 
 # --- CORE VIEWS ---
 
+@membership_required # <-- NEW: Membership required to view home page
 def Home(request):
     query = request.GET.get("q", "")
     if query:
@@ -69,7 +74,7 @@ def Home(request):
         "query": query,
     })
 
-
+@membership_required # <-- NEW: Membership required to view movie details
 def Movie(request, slug):
     movie = get_object_or_404(Movies, slug=slug)
     
@@ -83,7 +88,7 @@ def Movie(request, slug):
         "hd_download_url": hd_download_url,
     })
 
-
+@membership_required # <-- NEW: Membership required to view category filter
 def category_filter(request, category):
     query = request.GET.get("q", "")
     movies = Movies.objects.filter(type=category)
@@ -109,6 +114,12 @@ def download_token_view(request, quality, slug):
     Generates a token and redirects user DIRECTLY to download page.
     No ShrinkEarn redirection - goes straight to download.html.
     """
+    # START NEW AUTH LOGIC
+    if not request.session.get('membership_key_id'): 
+        # If not authenticated, use the decorator's logic to redirect to login_key
+        return membership_required(lambda r: None)(request)
+    # END NEW AUTH LOGIC
+
     movie = get_object_or_404(Movies, slug=slug)
     quality = quality.upper()
 
@@ -195,6 +206,12 @@ def download_page_view(request):
     Renders the final download page (download.html).
     This shows the Telegram deep link and/or direct download button.
     """
+    # START NEW AUTH LOGIC: Check authentication on the final download page
+    if not request.session.get('membership_key_id'): 
+        # If not authenticated, use the decorator's logic to redirect to login_key
+        return membership_required(lambda r: None)(request)
+    # END NEW AUTH LOGIC
+
     token = request.GET.get('token')
     movie_title = request.GET.get('title')
     quality = request.GET.get('quality')
@@ -298,6 +315,11 @@ def direct_download_redirect(request, token):
     """
     Validates the direct download token and redirects to the actual file.
     """
+    # START NEW AUTH LOGIC: Check authentication for final file access
+    if not request.session.get('membership_key_id'): 
+        return membership_required(lambda r: None)(request)
+    # END NEW AUTH LOGIC
+    
     logger.info(f"🔗 Direct download requested with token: {token}")
     
     try:

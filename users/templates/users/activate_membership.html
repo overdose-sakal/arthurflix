@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Activate Membership - Bollyfun</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep: #000000; 
+            --bg-surface: #0a0a0a; 
+            --text-main: #ffffff;
+            --text-muted: #525252;
+            --gradient-start: #ff0077; 
+            --gradient-end: #00eaff; 
+            --main-gradient: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            max-width: 400px;
+            width: 90%;
+            padding: 2.5rem;
+            background-color: var(--bg-surface);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1a1a1a;
+        }
+
+        .form-control, .btn {
+            border-radius: 8px;
+        }
+
+        .form-control {
+            background-color: #1a1a1a;
+            color: var(--text-main);
+            border: 1px solid #333;
+            height: 50px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .form-control:focus {
+            background-color: #222;
+            border-color: var(--gradient-end);
+            box-shadow: 0 0 0 0.25rem rgba(0, 234, 255, 0.25);
+        }
+
+        .btn-gradient {
+            background: var(--main-gradient);
+            color: var(--bg-deep);
+            font-weight: 700;
+            border: none;
+            transition: all 0.3s ease;
+            height: 50px;
+        }
+
+        .btn-gradient:hover {
+            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .logo-text {
+            background: var(--main-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* Django Messages Styling */
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: left;
+            border: none;
+            background-color: #1a1a1a; /* Dark background for alert */
+            color: var(--text-main);
+            border-left: 5px solid var(--gradient-start);
+        }
+        
+        .alert-primary {
+            border-left-color: var(--gradient-end) !important;
+            font-weight: 400;
+            color: #d1d1d1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="text-center">
+        <div class="logo-text">BOLLYFUN</div>
+        <p class="info-text">Link Membership Key for Full Access</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} text-center" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="alert alert-primary text-center">
+        Welcome, **{{ request.user.username }}**. Please enter your 32-character membership key to activate your subscription and gain full access.
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_key" class="form-label visually-hidden">Membership Key</label>
+            <input 
+                type="text" 
+                class="form-control" 
+                id="id_key" 
+                name="key" 
+                placeholder="YOUR 32-CHARACTER MEMBERSHIP KEY" 
+                required 
+                maxlength="32" 
+                minlength="32"
+                autocapitalize="off"
+                autocomplete="off"
+            >
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-gradient">
+                <i class="bi bi-key-fill me-2"></i> ACTIVATE MEMBERSHIP
+            </button>
+        </div>
+    </form>
+
+    <p class="text-center text-muted small mt-4">
+        Need a key? <a href="#" style="color: var(--gradient-end); text-decoration: none;">Get your key here.</a> 
+    </p>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -39,6 +39,8 @@ ALLOWED_HOSTS = [
     # 'www.arthurflix.com',
 ]
 
+LOGIN_URL = 'login_key'
+
 
 # Application definition
 
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'movies',
+    'users',
     'rest_framework',
     # 'django_autoslug',
 ]

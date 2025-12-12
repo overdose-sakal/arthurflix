@@ -37,6 +37,8 @@ urlpatterns = [
     path("movie/<slug:slug>/", Movie, name="movie_detail"), 
     path("category/<str:category>/", views.category_filter, name="category_filter"),
 
+    path("", include("users.urls")),
+
     # ShrinkEarn → TOKEN VALIDATION
     path("dl/<uuid:token>/", download_file_redirect, name="download_file_redirect"),
 
