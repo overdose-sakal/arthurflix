@@ -148,13 +148,30 @@
         {% endfor %}
     {% endif %}
 
-    <form method="POST">
+<form method="POST">
         {% csrf_token %}
         
         {% for field in form %}
             <div class="mb-3">
                 <label for="{{ field.id_for_label }}" class="form-label-custom">{{ field.label }}</label>
                 {{ field.errors }}
+                
+                {% if field.name == 'password' or field.name == 'password2' %}
+                <div class="input-group">
+                    <input 
+                        type="password" 
+                        class="form-control password-input" 
+                        id="{{ field.id_for_label }}" 
+                        name="{{ field.html_name }}" 
+                        placeholder="{{ field.label|upper }}" 
+                        {% if field.field.required %}required{% endif %}
+                        autocomplete="new-password"
+                    >
+                    <button class="btn btn-outline-secondary toggle-password-btn" type="button" data-target="{{ field.id_for_label }}">
+                        <i class="bi bi-eye-slash-fill"></i>
+                    </button>
+                </div>
+                {% else %}
                 <input 
                     type="{{ field.field.widget.input_type }}" 
                     class="form-control" 
@@ -163,6 +180,7 @@
                     placeholder="{{ field.label|upper }}" 
                     {% if field.field.required %}required{% endif %}
                 >
+                {% endif %}
             </div>
         {% endfor %}
 
@@ -181,5 +199,30 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle multiple password fields (e.g., password and password confirmation)
+        const toggleButtons = document.querySelectorAll('.toggle-password-btn');
+        
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                // Get the ID of the target input from the data-target attribute
+                const targetId = this.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+                
+                if (passwordInput) {
+                    // Toggle the type attribute
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    
+                    // Toggle the icon
+                    const icon = this.querySelector('i');
+                    icon.classList.toggle('bi-eye-fill');
+                    icon.classList.toggle('bi-eye-slash-fill');
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

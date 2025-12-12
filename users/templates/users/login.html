@@ -155,19 +155,23 @@
                 autocomplete="username"
             >
         </div>
-        <div class="mb-3">
+<div class="mb-3">
             <label for="id_password" class="form-label visually-hidden">Password</label>
-            <input 
-                type="password" 
-                class="form-control" 
-                id="id_password" 
-                name="password" 
-                placeholder="PASSWORD" 
-                required 
-                autocomplete="current-password"
-            >
+            <div class="input-group">
+                <input 
+                    type="password" 
+                    class="form-control" 
+                    id="id_password" 
+                    name="password" 
+                    placeholder="PASSWORD" 
+                    required 
+                    autocomplete="current-password"
+                >
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <i class="bi bi-eye-slash-fill"></i>
+                </button>
+            </div>
         </div>
-        
         {% if request.GET.next %}
         <input type="hidden" name="next" value="{{ request.GET.next }}">
         {% endif %}
@@ -186,5 +190,24 @@ Need an account? <a href="{% url 'register' %}" style="color: var(--gradient-end
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('id_password');
+        
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function (e) {
+                // Toggle the type attribute
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle the icon
+                const icon = this.querySelector('i');
+                icon.classList.toggle('bi-eye-fill');
+                icon.classList.toggle('bi-eye-slash-fill');
+            });
+        }
+    });
+</script>
 </body>
 </html>
