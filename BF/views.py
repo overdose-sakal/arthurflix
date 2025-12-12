@@ -108,7 +108,7 @@ def category_filter(request, category):
 
 
 # --- DOWNLOAD TOKEN VIEWS (DIRECT REDIRECT - NO SHRINKEARN) ---
-
+@membership_required
 def download_token_view(request, quality, slug):
     """
     Generates a token and redirects user DIRECTLY to download page.
@@ -200,7 +200,7 @@ def download_file_redirect(request, token):
         f"quality={token_instance.quality}"
     )
 
-
+@membership_required
 def download_page_view(request):
     """
     Renders the final download page (download.html).
@@ -310,7 +310,7 @@ def get_or_create_direct_download_token(movie, quality):
     logger.info(f"✨ Created new direct download token: {new_token.token}")
     return new_token
 
-
+@membership_required
 def direct_download_redirect(request, token):
     """
     Validates the direct download token and redirects to the actual file.
