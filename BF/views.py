@@ -115,9 +115,9 @@ def download_token_view(request, quality, slug):
     No ShrinkEarn redirection - goes straight to download.html.
     """
     # START NEW AUTH LOGIC
-    if not request.session.get('membership_key_id'): 
-        # If not authenticated, use the decorator's logic to redirect to login_key
-        return membership_required(lambda r: None)(request)
+    # if not request.session.get('membership_key_id'): 
+    #     # If not authenticated, use the decorator's logic to redirect to login_key
+    #     return membership_required(lambda r: None)(request)
     # END NEW AUTH LOGIC
 
     movie = get_object_or_404(Movies, slug=slug)
@@ -207,9 +207,9 @@ def download_page_view(request):
     This shows the Telegram deep link and/or direct download button.
     """
     # START NEW AUTH LOGIC: Check authentication on the final download page
-    if not request.session.get('membership_key_id'): 
-        # If not authenticated, use the decorator's logic to redirect to login_key
-        return membership_required(lambda r: None)(request)
+    # if not request.session.get('membership_key_id'): 
+    #     # If not authenticated, use the decorator's logic to redirect to login_key
+    #     return membership_required(lambda r: None)(request)
     # END NEW AUTH LOGIC
 
     token = request.GET.get('token')
@@ -316,8 +316,8 @@ def direct_download_redirect(request, token):
     Validates the direct download token and redirects to the actual file.
     """
     # START NEW AUTH LOGIC: Check authentication for final file access
-    if not request.session.get('membership_key_id'): 
-        return membership_required(lambda r: None)(request)
+    # if not request.session.get('membership_key_id'): 
+    #     return membership_required(lambda r: None)(request)
     # END NEW AUTH LOGIC
     
     logger.info(f"🔗 Direct download requested with token: {token}")
