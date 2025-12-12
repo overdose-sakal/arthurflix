@@ -196,3 +196,15 @@ REST_FRAMEWORK = {
 SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8000')
 
 PORT = os.environ.get("PORT", "10000")
+
+
+LOGGING = {
+    "version": 1,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
