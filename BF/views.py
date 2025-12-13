@@ -42,6 +42,8 @@ from datetime import timedelta # <-- NEW: Added for standard token expiry manage
 # ⬇️ ADD THIS IMPORT ⬇️
 from django.views.decorators.cache import never_cache
 
+from movies.models import Movies, DownloadToken, DirectDownloadToken, Episodes
+
 telegram_app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).build()
 initialized = False
 
@@ -92,6 +94,93 @@ def Movie(request, slug):
         "sd_download_url": sd_download_url,
         "hd_download_url": hd_download_url,
     })
+
+
+def episode_list_view(request, slug):
+    movie = get_object_or_404(Movies, slug=slug)
+    
+    # Ensure it's actually a series before listing episodes (good practice)
+    if movie.type not in ['tv', 'anime']:
+         # Redirect them back to the detail page if they somehow navigate here
+         return redirect('movie_detail', slug=slug)
+
+    episodes = movie.episodes_set.all().order_by('episode_number')
+    
+    context = {
+        'movie': movie,
+        'episodes': episodes
+    }
+    
+    # Renders the episode.html list
+    return render(request, 'episode.html', context) 
+
+
+# --- NEW: Direct Movie Stream View ---
+# This is the destination when a user clicks 'Stream SD/HD' on a Movie detail page.
+def stream_movie_view(request, quality, slug):
+    movie = get_object_or_404(Movies, slug=slug)
+    
+    quality = quality.upper()
+    
+    if quality == 'SD':
+        stream_url = movie.streamSD_link
+        content_name = f"{movie.title} (SD)"
+    elif quality == 'HD':
+        stream_url = movie.streamHD_link
+        content_name = f"{movie.title} (HD)"
+    else:
+        raise Http404("Invalid quality specified.")
+
+    if not stream_url:
+        return HttpResponse("Streaming link unavailable for this quality.", status=404)
+
+    context = {
+        'stream_url': stream_url,
+        'movie': movie,
+        'quality': quality,
+        'content_name': content_name,
+    }
+    
+    # Renders the stream.html iframe page
+    return render(request, 'stream.html', context)
+
+
+def stream_episode_view(request, quality, slug, episode_number):
+    # 1. Get the Movie object
+    movie = get_object_or_404(Movies, slug=slug)
+    
+    # 2. Get the specific Episode object
+    try:
+        episode = Episodes.objects.get(movie=movie, episode_number=episode_number)
+    except Episodes.DoesNotExist:
+        raise Http404("Episode not found.")
+    
+    # 3. Determine the correct streaming link
+    quality = quality.upper()
+    if quality == 'SD':
+        stream_url = episode.streamSD_link
+        content_name = f"{movie.title} - Episode {episode_number} (SD)"
+    elif quality == 'HD':
+        stream_url = episode.streamHD_link
+        content_name = f"{movie.title} - Episode {episode_number} (HD)"
+    else:
+        raise Http404("Invalid quality specified.")
+
+    if not stream_url:
+        # Handle case where link is missing
+        return HttpResponse("Streaming link unavailable for this quality.", status=404)
+
+    context = {
+        'stream_url': stream_url,
+        'movie': movie,
+        'episode': episode,
+        'quality': quality,
+        'content_name': content_name,
+    }
+    
+    # Render the stream template
+    return render(request, 'stream.html', context)
+    
 
 @membership_required # <-- NEW: Membership required to view category filter
 @never_cache 
@@ -378,6 +467,88 @@ def direct_download_redirect(request, token):
     
     # Redirect to the actual file
     return redirect(download_token.original_link)
+
+
+@membership_required 
+def episodes_list_view(request, slug):
+    """
+    Renders the episodes.html page for TV shows and Anime.
+    Fetches episodes from the new Episodes model.
+    """
+    movie = get_object_or_404(Movies, slug=slug)
+    
+    if movie.type not in ['tv', 'anime']:
+        return redirect('movie_detail', slug=slug)
+
+    # Use the related manager to fetch all episodes for this movie
+    episodes = movie.episodes_set.all().order_by('episode_number')
+
+    return render(request, "episodes.html", {
+        "movie": movie,
+        "episodes": episodes,
+    })
+# ⬆️ END UPDATED VIEW: episodes_list_view ⬆️
+
+
+# ⬇️ UPDATE VIEW: stream_content_view ⬇️
+@membership_required 
+def stream_content_view(request, slug, quality, episode_num=None):
+    """
+    Handles streaming for both single movies and specific episodes.
+    """
+    movie = get_object_or_404(Movies, slug=slug)
+    quality = quality.upper()
+    stream_url = None
+    content_name = movie.title # Default name
+    
+    if movie.type == 'movies' and episode_num is None:
+        # 1. Logic for a regular movie
+        if quality == 'SD':
+            stream_url = movie.streamSD_link
+        elif quality == 'HD':
+            stream_url = movie.streamHD_link
+    
+    elif movie.type in ['tv', 'anime'] and episode_num is not None:
+        # 2. Logic for a specific episode of a TV show/Anime
+        try:
+            episode_num = int(episode_num)
+        except (TypeError, ValueError):
+            raise Http404("Invalid episode number.")
+
+        try:
+            # Fetch the specific episode object
+            episode = movie.episodes_set.get(episode_number=episode_num)
+        except Episodes.DoesNotExist:
+            raise Http404(f"Episode {episode_num} not found for {movie.title}.")
+
+        # Determine stream URL based on quality
+        if quality == 'SD':
+            stream_url = episode.streamSD_link
+        elif quality == 'HD':
+            stream_url = episode.streamHD_link
+            
+        content_name = f"{movie.title} - E{episode_num}"
+        if episode.title:
+            content_name += f": {episode.title}"
+    
+    else:
+        # Catch unexpected flow
+        raise Http404("Invalid streaming request flow.")
+
+    if not stream_url:
+        logger.warning(f"Stream link requested for {slug} ({quality}, Episode: {episode_num}) but no link available.")
+        if movie.type in ['tv', 'anime']:
+             return redirect('episodes_list', slug=slug)
+        else:
+             raise Http404("Streaming link is not available for this quality.")
+
+
+    return render(request, "stream.html", {
+        "movie": movie,
+        "quality": quality,
+        "stream_url": stream_url,
+        "content_name": content_name, 
+    })
 
 
 # --- TELEGRAM WEBHOOK VIEW ---

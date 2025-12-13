@@ -8,7 +8,6 @@ import secrets
 import string
 
 
-
 # Create your models here.
 class Movies(models.Model):
     title = models.CharField(max_length=100)
@@ -30,15 +29,15 @@ class Movies(models.Model):
     dp = models.URLField(max_length=500, null=False, blank=False) #display picture
     screenshot1 = models.URLField(max_length=500)
     screenshot2 = models.URLField(max_length=500)
-    trailer = models.URLField(max_length=500, blank=True, null=True) # NEW: Field for movie trailer URL
+    trailer = models.URLField(max_length=500, blank=True, null=True)
     created_at = models.DateField(auto_now_add=True)
 
 
     
 
     #telegram links
-    SD_telegram_file_id = models.CharField(max_length=500, blank=True, null=True) # Max length increased
-    HD_telegram_file_id = models.CharField(max_length=500, blank=True, null=True) # Max length increased
+    SD_telegram_file_id = models.CharField(max_length=500, blank=True, null=True)
+    HD_telegram_file_id = models.CharField(max_length=500, blank=True, null=True)
 
     #message id (CRUCIAL for forwarding)
     SD_message_id = models.BigIntegerField(blank=True, null=True)
@@ -70,6 +69,16 @@ class Movies(models.Model):
         elif self.HD_link:
             return self.HD_format
 
+    # ⬇️ CORRECTED PLACEMENT: MOVED INSIDE THE MOVIES CLASS ⬇️
+    @property
+    def num_episodes(self):
+        """Returns the number of episodes associated with this TV/Anime."""
+        if self.type in ['tv', 'anime']:
+            # Accesses the related manager for the Episodes model
+            return self.episodes_set.count() 
+        return 0
+    # ⬆️ END CORRECTED PLACEMENT ⬆️
+
 
 # --- DOWNLOAD TOKEN MODEL (UPDATED) ---
 class DownloadToken(models.Model):
@@ -78,8 +87,8 @@ class DownloadToken(models.Model):
     """
     token = models.UUIDField(default=uuid.uuid4, unique=True)
     # New fields to properly link the token for lookup
-    movie = models.ForeignKey(Movies, on_delete=models.CASCADE, null=True, blank=True) # <<< NEW
-    quality = models.CharField(max_length=5, null=True, blank=True) # 'SD' or 'HD' <<< NEW
+    movie = models.ForeignKey(Movies, on_delete=models.CASCADE, null=True, blank=True)
+    quality = models.CharField(max_length=5, null=True, blank=True)
     
     file_id = models.CharField(max_length=500) 
     expires_at = models.DateTimeField()
@@ -152,8 +161,6 @@ class DirectDownloadToken(models.Model):
         return f"{self.token} - {self.movie.title} ({self.quality}) - Expires: {self.expires_at.strftime('%Y-%m-%d %H:%M')}"
 
 
-# Add this to the end of movies/models.py
-
 class SentFile(models.Model):
     """
     Tracks files sent to users for auto-deletion after 24 hours
@@ -174,3 +181,40 @@ class SentFile(models.Model):
     
     def __str__(self):
         return f"{self.movie.title} ({self.quality}) sent to {self.chat_id} - deletes at {self.delete_at}"
+
+
+# ⬇️ EPISODES MODEL REMAINS CORRECTLY PLACED ⬇️
+class Episodes(models.Model):
+    movie = models.ForeignKey(Movies, on_delete=models.CASCADE)
+    episode_number = models.IntegerField(
+        help_text="The sequence number of the episode (e.g., 1, 2, 3)"
+    )
+    title = models.CharField(
+        max_length=255, 
+        blank=True, 
+        null=True, 
+        help_text="Optional: Title of the episode (e.g., 'The Pilot')"
+    )
+    streamSD_link = models.URLField(
+        max_length=500, 
+        blank=True, 
+        null=True,
+        verbose_name="SD Stream Link (iframe src)"
+    )
+    streamHD_link = models.URLField(
+        max_length=500, 
+        blank=True, 
+        null=True,
+        verbose_name="HD Stream Link (iframe src)"
+    )
+
+    class Meta:
+        verbose_name = "Episode"
+        verbose_name_plural = "Episodes"
+        # Ensures that a movie cannot have two episodes with the same number
+        unique_together = ('movie', 'episode_number') 
+        ordering = ['movie', 'episode_number']
+
+    def __str__(self):
+        title_display = f" - {self.title}" if self.title else ""
+        return f"{self.movie.title} - E{self.episode_number}{title_display}"

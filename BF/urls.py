@@ -18,6 +18,11 @@ from .views import (
     download_page_view,
     direct_download_redirect,
     stream_movie_view,
+    episodes_list_view, # <-- NEW
+    stream_content_view,
+    stream_episode_view,
+    episode_list_view,        # ⬅️ NEW: For the list of episodes
+    stream_movie_view
 )
 
 from django.http import HttpResponse
@@ -42,6 +47,32 @@ urlpatterns = [
 
     path("", include("users.urls")),
 
+    # ⚠️ NEW: Episode List Page (Destination for TV/Anime Stream Button)
+    path("episodes/<slug:slug>/", episode_list_view, name="episode_list"),
+
+    # ⚠️ NEW: Direct Movie Stream (Destination for Movie Stream Buttons)
+    path("stream/movie/<str:quality>/<slug:slug>/", stream_movie_view, name="stream_movie"),
+
+    # 2. General Stream Player (Used for Movies OR specific Episodes)
+    path("stream/episodes/<slug:slug>/", episodes_list_view, name="episodes_list"),
+
+    # path(
+    #     "stream/<str:quality>/<slug:slug>/<int:episode_number>/", 
+    #     views.stream_episode_view, 
+    #     name="stream_episode"
+    # ),
+    
+
+    # For Movies: /stream/HD/movie-slug/
+    path("stream/<str:quality>/<slug:slug>/", stream_content_view, name="stream_movie"), 
+    # For Episodes: /stream/SD/tv-show-slug/1/
+    path("stream/<str:quality>/<slug:slug>/<int:episode_num>/", stream_content_view, name="stream_episode"),
+
+    path(
+        "stream/<str:quality>/<slug:slug>/<int:episode_number>/", 
+        stream_episode_view, # Use the function directly or via 'views.stream_episode_view'
+        name="stream_episode"
+    ),
 
 
     # ShrinkEarn → TOKEN VALIDATION

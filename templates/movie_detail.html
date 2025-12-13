@@ -224,7 +224,7 @@
                 </div>
             </div>
 
-            <h4 class="mb-3 ps-2 fw-bold text-white">SELECT DOWNLOAD QUALITY</h4>
+            {% comment %} <h4 class="mb-3 ps-2 fw-bold text-white">SELECT DOWNLOAD QUALITY</h4>
             <div class="row g-3">
                 {% if movie.SD_telegram_file_id or movie.SD_link %}
                 <div class="col-md-6">
@@ -259,44 +259,105 @@
                     </div>
                 </div>
                 {% endif %}
-            </div>
+            </div> {% endcomment %}
 
-            <h4 class="mt-5 mb-3 ps-2 fw-bold text-white">OR STREAM NOW (Instant Play)</h4>
+<h4 class="mb-3 ps-2 fw-bold text-white">STREAM NOW (VPN required)</h4>
+<h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Brave + Turbo VPN recommended (Mobile)</h6>
+<h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Ghosterly + Urban VPN (Chrome PC)</h6>
             <div class="row g-3">
-                {% if movie.streamSD_link %}
-                <div class="col-md-6">
+                {% if movie.type == 'movies' %}
+                    
+                    {% if movie.streamSD_link %}
+                    <div class="col-md-6">
+                        <div class="btn-download-wrapper">
+                            <a href="{% url 'stream_movie' 'SD' movie.slug %}" class="text-decoration-none btn-download">
+                                <div class="d-flex align-items-center">
+                                    <div class="btn-icon"><i class="bi bi-play-fill"></i></div>
+                                    <div>
+                                        <div class="text-white fw-bold">Stream (SD)</div>
+                                        <div class="text-quality">Small Screens (480p)</div>
+                                    </div>
+                                </div>
+                                <span class="badge bg-secondary fw-bold">STREAM SD</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if movie.streamHD_link %}
+                    <div class="col-md-6">
+                        <div class="btn-download-wrapper">
+                            <a href="{% url 'stream_movie' 'HD' movie.slug %}" class="text-decoration-none btn-download">
+                                <div class="d-flex align-items-center">
+                                    <div class="btn-icon"><i class="bi bi-play-btn-fill"></i></div> 
+                                    <div>
+                                        <div class="text-white fw-bold">Stream (HD)</div>
+                                        <div class="text-quality">Big Screens (720p)</div>
+                                    </div>
+                                </div>
+                                <span class="badge" style="background-color: var(--gradient-start); color: white; font-weight: 700;">STREAM HD</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                
+                {% elif movie.type in 'tv,anime' %}
+                <div class="col-12">
                     <div class="btn-download-wrapper">
-                        <a href="{% url 'stream_movie' 'SD' movie.slug %}" class="text-decoration-none btn-download" style="background-color: #383838;">
+                        <a href="{% url 'episode_list' movie.slug %}" class="text-decoration-none btn-download">
                             <div class="d-flex align-items-center">
-                                <div class="btn-icon" style="background: linear-gradient(135deg, #10e478, #0093ff);"><i class="bi bi-play-btn-fill"></i></div>
+                                <div class="btn-icon"><i class="bi bi-collection-play-fill"></i></div>
                                 <div>
-                                    <div class="text-white fw-bold">Stream Standard (SD)</div>
-                                    <div class="text-quality">480p - Low Data Usage</div>
+                                    <div class="text-white fw-bold">View All Episodes</div>
+                                    <div class="text-quality">Click here to start streaming this {{ movie.type|upper }} series</div>
                                 </div>
                             </div>
-                            <span class="badge bg-secondary fw-bold">STREAM</span>
+                            <span class="badge" style="background-color: var(--gradient-end); color: black; font-weight: 700;">SERIES</span>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <h4 class="mt-5 mb-3 ps-2 fw-bold text-white">SELECT DOWNLOAD QUALITY</h4>
+            <h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Telegram File</h6>
+            <h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Direct Download</h6>
+            <div class="row g-3">
+                {% if movie.SD_telegram_file_id or movie.SD_link %}
+                <div class="col-md-6">
+                    <div class="btn-download-wrapper">
+                        <a href="{% url 'download_token' 'SD' movie.slug %}" class="text-decoration-none btn-download">
+                            <div class="d-flex align-items-center">
+                                <div class="btn-icon"><i class="bi bi-cloud-arrow-down-fill"></i></div>
+                                <div>
+                                    <div class="text-white fw-bold">Standard Definition (SD)</div>
+                                    <div class="text-quality">Small Screens (480p)</div>
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary fw-bold">SD</span>
                         </a>
                     </div>
                 </div>
                 {% endif %}
                 
-                {% if movie.streamHD_link %}
+                {% if movie.HD_telegram_file_id or movie.HD_link %}
                 <div class="col-md-6">
                     <div class="btn-download-wrapper">
-                        <a href="{% url 'stream_movie' 'HD' movie.slug %}" class="text-decoration-none btn-download" style="background-color: #383838;">
+                        <a href="{% url 'download_token' 'HD' movie.slug %}" class="text-decoration-none btn-download">
                             <div class="d-flex align-items-center">
-                                <div class="btn-icon" style="background: linear-gradient(135deg, #ff4d00, #ff00ff);"><i class="bi bi-play-circle-fill"></i></div>
+                                <div class="btn-icon"><i class="bi bi-badge-hd-fill"></i></div>
                                 <div>
-                                    <div class="text-white fw-bold">Stream High (HD)</div>
-                                    <div class="text-quality">720p - Best Visuals</div>
+                                    <div class="text-white fw-bold">High Definition (HD)</div>
+                                    <div class="text-quality">Big Screens (720p)</div>
                                 </div>
                             </div>
-                            <span class="badge" style="background-color: var(--gradient-start); color: white; font-weight: 700;">STREAM</span>
+                            <span class="badge" style="background-color: var(--gradient-start); color: white; font-weight: 700;">HD</span>
                         </a>
                     </div>
                 </div>
                 {% endif %}
             </div>
+
 
             {% if movie.screenshot1 or movie.screenshot2 %}
             <div class="info-panel mt-4">

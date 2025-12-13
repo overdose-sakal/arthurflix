@@ -348,10 +348,19 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Automatically show the modal when the page loads
+    // Automatically show the modal only once per session
     document.addEventListener('DOMContentLoaded', function() {
-        const myModal = new bootstrap.Modal(document.getElementById('streamingSoonModal'));
-        myModal.show();
+        const modalId = 'streamingSoonModal';
+        const modalKey = 'hasShownStreamingModal';
+
+        // Check if the user has already seen the modal in this session
+        if (sessionStorage.getItem(modalKey) !== 'true') {
+            const myModal = new bootstrap.Modal(document.getElementById(modalId));
+            myModal.show();
+            
+            // Set the flag so it doesn't show again this session
+            sessionStorage.setItem(modalKey, 'true');
+        }
     });
 </script>
 </body>
