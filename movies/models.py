@@ -44,6 +44,9 @@ class Movies(models.Model):
     SD_message_id = models.BigIntegerField(blank=True, null=True)
     HD_message_id = models.BigIntegerField(blank=True, null=True)
 
+    streamSD_link = models.URLField(max_length=500, blank=True, null=True)
+    streamHD_link = models.URLField(max_length=500, blank=True, null=True)
+
     SD_link = models.URLField(max_length=500, blank=True, null=True)
     HD_link = models.URLField(max_length=500, blank=True, null=True)
 

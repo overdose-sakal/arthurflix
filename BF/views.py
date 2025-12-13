@@ -113,6 +113,33 @@ def category_filter(request, category):
     })
 
 
+@membership_required 
+def stream_movie_view(request, quality, slug):
+    """
+    Renders the stream.html page with the appropriate streaming link.
+    """
+    movie = get_object_or_404(Movies, slug=slug)
+    quality = quality.upper()
+    stream_url = None
+    
+    if quality == 'SD' and movie.streamSD_link:
+        stream_url = movie.streamSD_link
+    elif quality == 'HD' and movie.streamHD_link:
+        stream_url = movie.streamHD_link
+    
+    if not stream_url:
+        logger.warning(f"Stream link requested for {slug} ({quality}) but no link available.")
+        # Raise 404 or render an error page
+        raise Http404("Streaming link is not available for this quality.")
+
+    # The movie object is needed in the template for title and back link
+    return render(request, "stream.html", {
+        "movie": movie,
+        "quality": quality,
+        "stream_url": stream_url,
+    })
+
+
 # --- DOWNLOAD TOKEN VIEWS (DIRECT REDIRECT - NO SHRINKEARN) ---
 @membership_required
 def download_token_view(request, quality, slug):

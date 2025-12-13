@@ -261,6 +261,43 @@
                 {% endif %}
             </div>
 
+            <h4 class="mt-5 mb-3 ps-2 fw-bold text-white">OR STREAM NOW (Instant Play)</h4>
+            <div class="row g-3">
+                {% if movie.streamSD_link %}
+                <div class="col-md-6">
+                    <div class="btn-download-wrapper">
+                        <a href="{% url 'stream_movie' 'SD' movie.slug %}" class="text-decoration-none btn-download" style="background-color: #383838;">
+                            <div class="d-flex align-items-center">
+                                <div class="btn-icon" style="background: linear-gradient(135deg, #10e478, #0093ff);"><i class="bi bi-play-btn-fill"></i></div>
+                                <div>
+                                    <div class="text-white fw-bold">Stream Standard (SD)</div>
+                                    <div class="text-quality">480p - Low Data Usage</div>
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary fw-bold">STREAM</span>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if movie.streamHD_link %}
+                <div class="col-md-6">
+                    <div class="btn-download-wrapper">
+                        <a href="{% url 'stream_movie' 'HD' movie.slug %}" class="text-decoration-none btn-download" style="background-color: #383838;">
+                            <div class="d-flex align-items-center">
+                                <div class="btn-icon" style="background: linear-gradient(135deg, #ff4d00, #ff00ff);"><i class="bi bi-play-circle-fill"></i></div>
+                                <div>
+                                    <div class="text-white fw-bold">Stream High (HD)</div>
+                                    <div class="text-quality">720p - Best Visuals</div>
+                                </div>
+                            </div>
+                            <span class="badge" style="background-color: var(--gradient-start); color: white; font-weight: 700;">STREAM</span>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
             {% if movie.screenshot1 or movie.screenshot2 %}
             <div class="info-panel mt-4">
                 <h5 class="mb-3 fw-bold gradient-text">SCREENSHOTS</h5>

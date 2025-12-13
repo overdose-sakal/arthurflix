@@ -17,6 +17,7 @@ from .views import (
     telegram_webhook_view,
     download_page_view,
     direct_download_redirect,
+    stream_movie_view,
 )
 
 from django.http import HttpResponse
@@ -36,6 +37,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("movie/<slug:slug>/", Movie, name="movie_detail"), 
     path("category/<str:category>/", views.category_filter, name="category_filter"),
+
+    path("stream/<str:quality>/<slug:slug>/", stream_movie_view, name="stream_movie"),
 
     path("", include("users.urls")),
 
