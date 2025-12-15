@@ -18,11 +18,12 @@ from .views import (
     download_page_view,
     direct_download_redirect,
     stream_movie_view,
-    episodes_list_view, # <-- NEW
+    # episodes_list_view, # <-- NEW
     stream_content_view,
-    stream_episode_view,
-    episode_list_view,        # ⬅️ NEW: For the list of episodes
-    stream_movie_view
+    # stream_episode_view,
+    # episode_list_view,        # ⬅️ NEW: For the list of episodes
+    stream_movie_view,
+    series_stream_page,
 )
 
 from django.http import HttpResponse
@@ -43,18 +44,20 @@ urlpatterns = [
     path("movie/<slug:slug>/", Movie, name="movie_detail"), 
     path("category/<str:category>/", views.category_filter, name="category_filter"),
 
+    
+
     path("stream/<str:quality>/<slug:slug>/", stream_movie_view, name="stream_movie"),
 
     path("", include("users.urls")),
 
-    # ⚠️ NEW: Episode List Page (Destination for TV/Anime Stream Button)
-    path("episodes/<slug:slug>/", episode_list_view, name="episode_list"),
+    # ⚠️ NEW: Merged Stream/Episode List Page (Used for TV/Anime)
+    path("episodes/<slug:slug>/", series_stream_page, name="episode_list"), # <-- NEW VIEW FUNCTION
 
     # ⚠️ NEW: Direct Movie Stream (Destination for Movie Stream Buttons)
     path("stream/movie/<str:quality>/<slug:slug>/", stream_movie_view, name="stream_movie"),
 
-    # 2. General Stream Player (Used for Movies OR specific Episodes)
-    path("stream/episodes/<slug:slug>/", episodes_list_view, name="episodes_list"),
+    # Fallback/Generic Stream URL (Kept for safety, for movies)
+    path("stream/content/<str:quality>/<slug:slug>/", stream_content_view, name="stream_content"),
 
     # path(
     #     "stream/<str:quality>/<slug:slug>/<int:episode_number>/", 
@@ -68,11 +71,11 @@ urlpatterns = [
     # For Episodes: /stream/SD/tv-show-slug/1/
     path("stream/<str:quality>/<slug:slug>/<int:episode_num>/", stream_content_view, name="stream_episode"),
 
-    path(
-        "stream/<str:quality>/<slug:slug>/<int:episode_number>/", 
-        stream_episode_view, # Use the function directly or via 'views.stream_episode_view'
-        name="stream_episode"
-    ),
+    # path(
+    #     "stream/<str:quality>/<slug:slug>/<int:episode_number>/", 
+    #     stream_episode_view, # Use the function directly or via 'views.stream_episode_view'
+    #     name="stream_episode"
+    # ),
 
 
     # ShrinkEarn → TOKEN VALIDATION

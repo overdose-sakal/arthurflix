@@ -20,6 +20,7 @@ from rest_framework.response import Response
 from movies.models import Movies, DownloadToken, DirectDownloadToken
 from movies.telegram_utils import TelegramFileManager
 from movies.serializers import MovieSerializer
+# from .views import series_stream_page
 
 # NEW IMPORTS FOR MEMBERSHIP KEY SYSTEM
 from users.views import membership_required # <-- NEW
@@ -96,23 +97,72 @@ def Movie(request, slug):
     })
 
 
-def episode_list_view(request, slug):
+@membership_required
+def series_stream_page(request, slug):
+    """
+    Handles the merged Series Stream Page (Player + Episode List).
+    Uses URL query params: ?e=<episode_num>&q=<quality>
+    """
     movie = get_object_or_404(Movies, slug=slug)
     
-    # Ensure it's actually a series before listing episodes (good practice)
     if movie.type not in ['tv', 'anime']:
-         # Redirect them back to the detail page if they somehow navigate here
+         # If not a series, redirect back to the detail page.
          return redirect('movie_detail', slug=slug)
 
+    # 1. Get all episodes
     episodes = movie.episodes_set.all().order_by('episode_number')
-    
+    if not episodes:
+        return render(request, 'episode.html', {'movie': movie, 'episodes': []})
+
+    # 2. Determine initial episode and quality from query params or default
+    current_episode = episodes.first() # Default to the first episode
+    episode_num = current_episode.episode_number
+    current_quality = 'SD'
+    stream_url = ""
+
+    try:
+        # Check for query parameters (?e=X&q=Y)
+        requested_ep_num = int(request.GET.get('e', episode_num))
+        requested_quality = request.GET.get('q', current_quality).upper()
+        
+        # Try to find the requested episode
+        current_episode = episodes.get(episode_number=requested_ep_num)
+        episode_num = requested_ep_num
+        current_quality = requested_quality
+
+        # 3. Get stream URL
+        if current_quality == 'SD':
+            stream_url = current_episode.streamSD_link
+        elif current_quality == 'HD':
+            stream_url = current_episode.streamHD_link
+        
+        # Fallback to the other quality if the requested one is missing
+        if not stream_url:
+            if current_quality == 'SD' and current_episode.streamHD_link:
+                stream_url = current_episode.streamHD_link
+                current_quality = 'HD'
+            elif current_quality == 'HD' and current_episode.streamSD_link:
+                stream_url = current_episode.streamSD_link
+                current_quality = 'SD'
+        
+    except (ValueError, TypeError, Episodes.DoesNotExist):
+        # Fallback to first episode's default quality if query params fail
+        current_episode = episodes.first()
+        episode_num = current_episode.episode_number
+        current_quality = 'SD'
+        stream_url = current_episode.streamSD_link or current_episode.streamHD_link or ""
+
+
     context = {
         'movie': movie,
-        'episodes': episodes
+        'episodes': episodes,
+        'stream_url': stream_url,
+        'current_episode': current_episode,
+        'current_quality': current_quality,
     }
     
-    # Renders the episode.html list
-    return render(request, 'episode.html', context) 
+    # Renders the combined stream/episode list page
+    return render(request, 'episode.html', context)
 
 
 # --- NEW: Direct Movie Stream View ---
@@ -145,41 +195,41 @@ def stream_movie_view(request, quality, slug):
     return render(request, 'stream.html', context)
 
 
-def stream_episode_view(request, quality, slug, episode_number):
-    # 1. Get the Movie object
-    movie = get_object_or_404(Movies, slug=slug)
+# def stream_episode_view(request, quality, slug, episode_number):
+#     # 1. Get the Movie object
+#     movie = get_object_or_404(Movies, slug=slug)
     
-    # 2. Get the specific Episode object
-    try:
-        episode = Episodes.objects.get(movie=movie, episode_number=episode_number)
-    except Episodes.DoesNotExist:
-        raise Http404("Episode not found.")
+#     # 2. Get the specific Episode object
+#     try:
+#         episode = Episodes.objects.get(movie=movie, episode_number=episode_number)
+#     except Episodes.DoesNotExist:
+#         raise Http404("Episode not found.")
     
-    # 3. Determine the correct streaming link
-    quality = quality.upper()
-    if quality == 'SD':
-        stream_url = episode.streamSD_link
-        content_name = f"{movie.title} - Episode {episode_number} (SD)"
-    elif quality == 'HD':
-        stream_url = episode.streamHD_link
-        content_name = f"{movie.title} - Episode {episode_number} (HD)"
-    else:
-        raise Http404("Invalid quality specified.")
+#     # 3. Determine the correct streaming link
+#     quality = quality.upper()
+#     if quality == 'SD':
+#         stream_url = episode.streamSD_link
+#         content_name = f"{movie.title} - Episode {episode_number} (SD)"
+#     elif quality == 'HD':
+#         stream_url = episode.streamHD_link
+#         content_name = f"{movie.title} - Episode {episode_number} (HD)"
+#     else:
+#         raise Http404("Invalid quality specified.")
 
-    if not stream_url:
-        # Handle case where link is missing
-        return HttpResponse("Streaming link unavailable for this quality.", status=404)
+#     if not stream_url:
+#         # Handle case where link is missing
+#         return HttpResponse("Streaming link unavailable for this quality.", status=404)
 
-    context = {
-        'stream_url': stream_url,
-        'movie': movie,
-        'episode': episode,
-        'quality': quality,
-        'content_name': content_name,
-    }
+#     context = {
+#         'stream_url': stream_url,
+#         'movie': movie,
+#         'episode': episode,
+#         'quality': quality,
+#         'content_name': content_name,
+#     }
     
-    # Render the stream template
-    return render(request, 'stream.html', context)
+#     # Render the stream template
+#     return render(request, 'stream.html', context)
     
 
 @membership_required # <-- NEW: Membership required to view category filter
@@ -202,31 +252,31 @@ def category_filter(request, category):
     })
 
 
-@membership_required 
-def stream_movie_view(request, quality, slug):
-    """
-    Renders the stream.html page with the appropriate streaming link.
-    """
-    movie = get_object_or_404(Movies, slug=slug)
-    quality = quality.upper()
-    stream_url = None
+# @membership_required 
+# def stream_movie_view(request, quality, slug):
+#     """
+#     Renders the stream.html page with the appropriate streaming link.
+#     """
+#     movie = get_object_or_404(Movies, slug=slug)
+#     quality = quality.upper()
+#     stream_url = None
     
-    if quality == 'SD' and movie.streamSD_link:
-        stream_url = movie.streamSD_link
-    elif quality == 'HD' and movie.streamHD_link:
-        stream_url = movie.streamHD_link
+#     if quality == 'SD' and movie.streamSD_link:
+#         stream_url = movie.streamSD_link
+#     elif quality == 'HD' and movie.streamHD_link:
+#         stream_url = movie.streamHD_link
     
-    if not stream_url:
-        logger.warning(f"Stream link requested for {slug} ({quality}) but no link available.")
-        # Raise 404 or render an error page
-        raise Http404("Streaming link is not available for this quality.")
+#     if not stream_url:
+#         logger.warning(f"Stream link requested for {slug} ({quality}) but no link available.")
+#         # Raise 404 or render an error page
+#         raise Http404("Streaming link is not available for this quality.")
 
-    # The movie object is needed in the template for title and back link
-    return render(request, "stream.html", {
-        "movie": movie,
-        "quality": quality,
-        "stream_url": stream_url,
-    })
+#     # The movie object is needed in the template for title and back link
+#     return render(request, "stream.html", {
+#         "movie": movie,
+#         "quality": quality,
+#         "stream_url": stream_url,
+#     })
 
 
 # --- DOWNLOAD TOKEN VIEWS (DIRECT REDIRECT - NO SHRINKEARN) ---
@@ -469,24 +519,24 @@ def direct_download_redirect(request, token):
     return redirect(download_token.original_link)
 
 
-@membership_required 
-def episodes_list_view(request, slug):
-    """
-    Renders the episodes.html page for TV shows and Anime.
-    Fetches episodes from the new Episodes model.
-    """
-    movie = get_object_or_404(Movies, slug=slug)
+# @membership_required 
+# def episodes_list_view(request, slug):
+#     """
+#     Renders the episodes.html page for TV shows and Anime.
+#     Fetches episodes from the new Episodes model.
+#     """
+#     movie = get_object_or_404(Movies, slug=slug)
     
-    if movie.type not in ['tv', 'anime']:
-        return redirect('movie_detail', slug=slug)
+#     if movie.type not in ['tv', 'anime']:
+#         return redirect('movie_detail', slug=slug)
 
-    # Use the related manager to fetch all episodes for this movie
-    episodes = movie.episodes_set.all().order_by('episode_number')
+#     # Use the related manager to fetch all episodes for this movie
+#     episodes = movie.episodes_set.all().order_by('episode_number')
 
-    return render(request, "episodes.html", {
-        "movie": movie,
-        "episodes": episodes,
-    })
+#     return render(request, "episodes.html", {
+#         "movie": movie,
+#         "episodes": episodes,
+#     })
 # ⬆️ END UPDATED VIEW: episodes_list_view ⬆️
 
 
