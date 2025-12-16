@@ -31,6 +31,18 @@ from django.http import HttpResponse
 def health(request):
     return HttpResponse("OK", status=200)
 
+from django.shortcuts import redirect
+from django.core.exceptions import PermissionDenied
+from django.urls import path, include
+
+def permission_denied_view(request, exception):
+    if str(exception) == "DUPLICATE_SESSION":
+        return redirect("/login/?reason=duplicate_session")
+    return redirect("/login/")
+
+handler403 = permission_denied_view
+
+
 # router = DefaultRouter()
 # router.register("movies", MovieViewSet, basename="movies")
 
@@ -98,5 +110,6 @@ urlpatterns = [
     }),
 
     path("direct/<str:token>/", direct_download_redirect, name="direct_download_redirect"),
+
 
 ]

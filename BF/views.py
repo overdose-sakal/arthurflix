@@ -39,6 +39,9 @@ from telegram.ext import Application, CommandHandler
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+from users.models import MovieVisit
+
+
 from datetime import timedelta # <-- NEW: Added for standard token expiry management
 # ⬇️ ADD THIS IMPORT ⬇️
 from django.views.decorators.cache import never_cache
@@ -83,18 +86,24 @@ def Home(request):
     })
 
 @membership_required # <-- NEW: Membership required to view movie details
+@membership_required
 def Movie(request, slug):
     movie = get_object_or_404(Movies, slug=slug)
-    
+
+    # ✅ RECORD LAST VISITED MOVIE
+    if request.user.is_authenticated:
+        MovieVisit.record_visit(request.user, movie)
+
     # Check if download is available via Telegram file_id OR direct link
     sd_download_url = bool(movie.SD_telegram_file_id or movie.SD_link)
     hd_download_url = bool(movie.HD_telegram_file_id or movie.HD_link)
-    
+
     return render(request, "movie_detail.html", {
         "movie": movie,
         "sd_download_url": sd_download_url,
         "hd_download_url": hd_download_url,
     })
+
 
 
 @membership_required
@@ -643,3 +652,11 @@ class MovieViewSet(viewsets.ModelViewSet):
 
 import telegram
 print("PTB VERSION:", telegram.__version__)
+
+
+from users.models import MovieVisit
+from django.contrib.auth.decorators import login_required
+
+
+# Update your movie_detail view to include visit tracking
+# Here's an example of what it should look like:

@@ -1,45 +1,69 @@
 # users/middleware.py
 
-from django.contrib import auth, messages
-from django.shortcuts import redirect
-from django.conf import settings
+from django.contrib import auth, messages # <-- CRITICAL FIX: Ensure messages is imported
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from urllib.parse import urlencode
+
 
 class SingleSessionMiddleware:
     """
-    Enforces that a user can only have one active session key. 
-    If a user logs in elsewhere, their older session is invalidated and they are logged out.
+    Enforces single active session per user.
+    If a different session_key is detected, logs out the user
+    and redirects to /session-ended/?reason=duplicate_session
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
+        print("✅ SingleSessionMiddleware INITIALIZED")
 
     def __call__(self, request):
+        print("🚨 SingleSessionMiddleware CALLED:", request.path)
+
+        # Allow login page and session-ended page to load normally
+        if request.path == reverse("login") or request.path == reverse("session_ended"):
+            return self.get_response(request)
+
         if request.user.is_authenticated:
+            print("👤 Authenticated user:", request.user)
+
             try:
-                # Access the tracker via the related_name 'session_tracker'
                 tracker = request.user.session_tracker
-                
-                # If the current session key does NOT match the stored active key
-                if tracker.session_key != request.session.session_key:
-                    
-                    # 1. Log the user out
-                    auth.logout(request)
-                    
-                    # 2. Add a message to display upon redirection
-                    # 👇 UPDATED MESSAGE HERE 👇
-                    messages.warning(
-                        request, 
-                        "Sorry, you can only login from one device at a time."
+
+                current_key = request.session.session_key
+                stored_key = tracker.session_key
+                print("🧪 CHECKING DUPLICATE SESSION")
+                print("🔑 STORED SESSION KEY :", stored_key)
+                print("🔑 CURRENT SESSION KEY:", current_key)
+
+                if not current_key or not stored_key:
+                    print("⚠️ Missing session key, skipping check")
+                    return self.get_response(request)
+
+                # 🔥 DUPLICATE SESSION DETECTED
+                if stored_key != current_key:
+                    print("❌ DUPLICATE SESSION DETECTED")
+
+                    messages.error(
+                        request,
+                        "Duplicate session detected. You have been forcibly logged out."
                     )
                     
-                    # 3. Redirect to the login page (defined in settings.LOGIN_URL)
-                    return redirect(settings.LOGIN_URL)
-                    
-            except AttributeError:
-                # Handles users who logged in before this feature was enabled.
-                pass 
-            except Exception:
-                # General exception handling
-                pass
+                    auth.logout(request)
+                    request.session.flush()
 
-        response = self.get_response(request)
-        return response
+                    query = urlencode({"reason": "duplicate_session"})
+                    
+                    # FINAL REDIRECT: To the session_ended view
+                    redirect_url = f"{reverse('session_ended')}?{query}"
+
+                    print("➡️ Redirecting to:", redirect_url)
+
+                    return HttpResponseRedirect(redirect_url)
+
+            except Exception as e:
+                # If an error occurs here, the redirect is bypassed.
+                print("!!! CRITICAL FAILURE IN DUPLICATE SESSION CHECK !!!")
+                print(f"⚠️ Session tracker error: {repr(e)}") # <--- REPORT THIS IF IT FAILS AGAIN
+
+        return self.get_response(request)

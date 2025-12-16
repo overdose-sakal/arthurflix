@@ -17,6 +17,14 @@ import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Cloudinary Configuration
+import cloudinary.uploader
+import cloudinary.api
+
+CLOUDINARY_CLOUD_NAME = 'dmryeq2dv' # Replace with your Cloud Name
+CLOUDINARY_API_KEY = '152447812159866'       # Replace with your API Key
+CLOUDINARY_API_SECRET = 'UomA0R0FHGtw5H708V_G1Yixa-s' # Replace with your API Secret
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -39,7 +47,7 @@ ALLOWED_HOSTS = [
     # 'www.arthurflix.com',
 ]
 
-LOGIN_URL = 'login_key'
+LOGIN_URL = '/login/'
 
 
 # Application definition
@@ -54,6 +62,8 @@ INSTALLED_APPS = [
     'movies',
     'users',
     'rest_framework',
+    'cloudinary',
+    'cloudinary_storage',
     # 'django_autoslug',
 ]
 
@@ -64,10 +74,11 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # ADD THIS NEW LINE RIGHT AFTER AuthenticationMiddleware
-    'users.middleware.SingleSessionMiddleware', 
+    # ADD THIS NEW LINE RIGHT AFTER AuthenticationMiddleware 
     'django.contrib.messages.middleware.MessageMiddleware',
+    'users.middleware.SingleSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'BF.urls'
@@ -201,12 +212,25 @@ PORT = os.environ.get("PORT", "10000")
 
 
 LOGGING = {
-    "version": 1,
-    "handlers": {
-        "console": {"class": "logging.StreamHandler"},
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "DEBUG",
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'your_app_name.middleware': {  # <-- UPDATE THIS PATH
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }

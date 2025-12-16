@@ -21,7 +21,11 @@
             --gradient-end: #00eaff; 
             --main-gradient: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
             --panel-bg: rgba(10, 10, 10, 0.9);
+            --watchlist-color: #ffd000;
+            --finished-color: #00ff88;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--bg-deep);
@@ -31,7 +35,6 @@
             min-height: 100vh;
         }
 
-        /* Ambient Dynamic Background */
         .ambient-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -43,14 +46,12 @@
             transform: scale(1.1);
         }
 
-        /* Content Layout & Animation */
         .content-wrapper { 
             margin-top: 50px; 
             padding-bottom: 50px;
             animation: fadeIn 1s ease-out;
         }
 
-        /* Info Panel with Subtle Gradient Border */
         .info-panel {
             background: var(--panel-bg);
             backdrop-filter: blur(10px);
@@ -63,7 +64,6 @@
             position: relative;
         }
 
-        /* Poster */
         .poster-hero {
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.7);
@@ -73,11 +73,107 @@
         }
         .poster-hero:hover { transform: scale(1.02); }
 
-        /* Typography */
-        h1 { font-family: 'Space Mono', monospace; font-weight: 700; letter-spacing: -1px; margin-bottom: 0.5rem; }
-        .movie-meta { color: var(--gradient-end); font-weight: 500; font-size: 1rem; margin-bottom: 25px; }
+        h1 { 
+            font-family: 'Space Mono', monospace; 
+            font-weight: 700; 
+            letter-spacing: -1px; 
+            margin-bottom: 0.5rem; 
+        }
+        
+        .movie-meta { 
+            color: var(--gradient-end); 
+            font-weight: 500; 
+            font-size: 1rem; 
+            margin-bottom: 25px; 
+        }
 
-        /* Download Buttons with Gradient Border/Glow */
+        /* Catalogue Status Buttons */
+        .catalogue-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .status-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px 20px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            background: var(--bg-surface);
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-btn i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .status-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        .status-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .status-btn:hover::before {
+            opacity: 1;
+        }
+
+        .status-btn.watchlist {
+            border-color: var(--watchlist-color);
+            color: var(--watchlist-color);
+            background: rgba(255, 208, 0, 0.05);
+        }
+
+        .status-btn.watchlist:hover {
+            background: rgba(255, 208, 0, 0.15);
+            box-shadow: 0 0 20px rgba(255, 208, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .status-btn.watchlist.active {
+            background: var(--watchlist-color);
+            color: #000;
+            box-shadow: 0 0 25px rgba(255, 208, 0, 0.5);
+        }
+
+        .status-btn.finished {
+            border-color: var(--finished-color);
+            color: var(--finished-color);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .status-btn.finished:hover {
+            background: rgba(0, 255, 136, 0.15);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .status-btn.finished.active {
+            background: var(--finished-color);
+            color: #000;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Download Buttons */
         .btn-download-wrapper {
             position: relative;
             padding: 1px;
@@ -85,6 +181,7 @@
             overflow: hidden;
             transition: all 0.3s;
         }
+        
         .btn-download-wrapper::before {
             content: '';
             position: absolute;
@@ -96,7 +193,11 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
-        .btn-download-wrapper:hover::before { opacity: 1; animation-duration: 2s; }
+        
+        .btn-download-wrapper:hover::before { 
+            opacity: 1; 
+            animation-duration: 2s; 
+        }
 
         .btn-download {
             background: var(--bg-surface);
@@ -109,44 +210,83 @@
             align-items: center;
             justify-content: space-between;
             transition: all 0.2s ease;
-            position: relative; z-index: 1;
+            position: relative; 
+            z-index: 1;
         }
-        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); color: white; }
+        
+        .btn-download:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); 
+            color: white; 
+        }
         
         .btn-icon {
-            width: 30px; height: 30px;
+            width: 30px; 
+            height: 30px;
             background: var(--main-gradient);
             border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
             margin-right: 12px;
             color: var(--bg-deep);
         }
-        .text-quality { font-size: 0.8rem; color: #a3a3a3; margin-top: 2px; }
         
-        /* New style for specs label */
-        .spec-label { color: var(--text-main) !important; font-weight: 600; }
-
-        @keyframes rotateGradient {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .text-quality { 
+            font-size: 0.8rem; 
+            color: #a3a3a3; 
+            margin-top: 2px; 
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        @media (max-width: 992px) {
-            .poster-col { text-align: center; }
-            .poster-hero { width: 50%; margin: 0 auto 30px; }
-        }
-@media (max-width: 576px) {
-            .poster-hero { width: 100%; margin: 0 auto 30px; }
+        
+        .spec-label { 
+            color: var(--text-main) !important; 
+            font-weight: 600; 
         }
 
-        /* Gradient Text Helper */
         .gradient-text {
             background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-fill-color: transparent;
+        }
+
+        @keyframes rotateGradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .status-btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .status-btn.loading i {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @media (max-width: 992px) {
+            .poster-col { text-align: center; }
+            .poster-hero { width: 50%; margin: 0 auto 30px; }
+        }
+
+        @media (max-width: 576px) {
+            .poster-hero { width: 100%; margin: 0 auto 30px; }
+            .catalogue-actions {
+                flex-direction: column;
+            }
+            .status-btn {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
@@ -166,6 +306,17 @@
     <div class="row">
         <div class="col-lg-4 poster-col">
             <img src="{{ movie.dp }}" alt="{{ movie.title }}" class="poster-hero">
+
+            <div class="catalogue-actions">
+                <button class="status-btn watchlist" data-status="watchlist" data-movie-id="{{ movie.id }}">
+                    <i class="bi bi-bookmark-star-fill"></i>
+                    <span>Watchlist</span>
+                </button>
+                <button class="status-btn finished" data-status="finished" data-movie-id="{{ movie.id }}">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Finished</span>
+                </button>
+            </div>
             
             {% if movie.trailer %}
             <div class="mt-4 mb-4" style="position: relative; width: 100%; padding-bottom: 56.25%;">
@@ -183,7 +334,7 @@
                     allowfullscreen
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 10px; border: 1px solid var(--gradient-start);"
                 ></iframe>
-                </div>
+            </div>
             {% endif %}
 
             <div class="info-panel mt-4 d-none d-lg-block">
@@ -219,55 +370,15 @@
                         No detailed description is available for this title.
                     {% endif %}
                 </p>
-                
-                <div class="mt-4">
-                </div>
             </div>
 
-            {% comment %} <h4 class="mb-3 ps-2 fw-bold text-white">SELECT DOWNLOAD QUALITY</h4>
-            <div class="row g-3">
-                {% if movie.SD_telegram_file_id or movie.SD_link %}
-                <div class="col-md-6">
-                    <div class="btn-download-wrapper">
-                        <a href="{% url 'download_token' 'SD' movie.slug %}" class="text-decoration-none btn-download">
-                            <div class="d-flex align-items-center">
-                                <div class="btn-icon"><i class="bi bi-cloud-arrow-down-fill"></i></div>
-                                <div>
-                                    <div class="text-white fw-bold">Standard Definition (SD)</div>
-                                    <div class="text-quality">Optimized for mobile (480p)</div>
-                                </div>
-                            </div>
-                            <span class="badge bg-secondary fw-bold">SD</span>
-                        </a>
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% if movie.HD_telegram_file_id or movie.HD_link %}
-                <div class="col-md-6">
-                    <div class="btn-download-wrapper">
-                        <a href="{% url 'download_token' 'HD' movie.slug %}" class="text-decoration-none btn-download">
-                            <div class="d-flex align-items-center">
-                                <div class="btn-icon"><i class="bi bi-badge-hd-fill"></i></div>
-                                <div>
-                                    <div class="text-white fw-bold">High Definition (HD)</div>
-                                    <div class="text-quality">Best quality for large screens (720p)</div>
-                                </div>
-                            </div>
-                            <span class="badge" style="background-color: var(--gradient-start); color: white; font-weight: 700;">HD</span>
-                        </a>
-                    </div>
-                </div>
-                {% endif %}
-            </div> {% endcomment %}
-
-<h4 class="mb-3 ps-2 fw-bold text-white">STREAM NOW (Requirements &#8601;)</h4>
-<h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Brave Browser (Mobile)</h6>
-<h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Brave Browser (PC)</h6>
-<h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Use VPN if video doesnt load.</h6>
+            <h4 class="mb-3 ps-2 fw-bold text-white">STREAM NOW (Requirements &#8601;)</h4>
+            <h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Brave Browser (Mobile)</h6>
+            <h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Brave Browser (PC)</h6>
+            <h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Use VPN if video doesn't load.</h6>
+            
             <div class="row g-3">
                 {% if movie.type == 'movies' %}
-                    
                     {% if movie.streamSD_link %}
                     <div class="col-md-6">
                         <div class="btn-download-wrapper">
@@ -323,6 +434,7 @@
             <h4 class="mt-5 mb-3 ps-2 fw-bold text-white">SELECT DOWNLOAD QUALITY</h4>
             <h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Telegram File</h6>
             <h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Direct Download</h6>
+            
             <div class="row g-3">
                 {% if movie.SD_telegram_file_id or movie.SD_link %}
                 <div class="col-md-6">
@@ -359,7 +471,6 @@
                 {% endif %}
             </div>
 
-
             {% if movie.screenshot1 or movie.screenshot2 %}
             <div class="info-panel mt-4">
                 <h5 class="mb-3 fw-bold gradient-text">SCREENSHOTS</h5>
@@ -381,23 +492,18 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // YouTube Trailer Setup
     const iframe = document.getElementById('youtube-trailer');
-    // We use the raw trailer URL from the model field
     const trailerUrl = "{{ movie.trailer }}"; 
     
     if (iframe && trailerUrl) {
         let src = trailerUrl;
-        
-        // 1. Get the current protocol and host (e.g., http://localhost:8000)
         const origin = window.location.protocol + '//' + window.location.host;
         
-        // 2. Force the YouTube URL protocol to match the current page's protocol (HTTP) for local testing
         if (window.location.protocol === 'http:') {
             src = src.replace('https:', 'http:');
         }
         
-        // 3. Extract the clean base URL (e.g., http://www.youtube.com/embed/VIDEO_ID)
-        // We handle the /watch?v= and standard embed formats
         if (src.includes('/watch?v=')) {
             const videoId = src.split('/watch?v=')[1].split('&')[0];
             src = src.split('//')[0] + '//www.youtube.com/embed/' + videoId;
@@ -405,17 +511,98 @@ document.addEventListener('DOMContentLoaded', function() {
             const videoId = src.split('/youtu.be/')[1].split('?')[0];
             src = src.split('//')[0] + '//www.youtube.com/embed/' + videoId;
         } else {
-            // Assume it's already an embed link, clear existing parameters like ?si=
             src = src.split('?')[0].split('&')[0];
         }
 
-        // 4. Append the origin parameter (this is the critical fix for Error 153)
         const separator = src.includes('?') ? '&' : '?';
-        src += separator + 'origin=' + encodeURIComponent(origin) + '&autoplay=0'; // Added autoplay=0 for good measure
+        src += separator + 'origin=' + encodeURIComponent(origin) + '&autoplay=0';
         
-        // 5. Set the source dynamically
         iframe.setAttribute('src', src);
-        console.log("YouTube iframe source successfully set with official code and origin fix:", src);
+    }
+
+    // Catalogue Status Buttons
+    const statusButtons = document.querySelectorAll('.status-btn');
+    
+    // Load initial state from backend (you'll need to add this data)
+    const currentStatus = "{{ user_catalogue_status|default:'' }}";
+    if (currentStatus) {
+        statusButtons.forEach(btn => {
+            if (btn.dataset.status === currentStatus) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    statusButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const movieId = this.dataset.movieId;
+            const status = this.dataset.status;
+            const isActive = this.classList.contains('active');
+            
+            // Add loading state
+            this.classList.add('loading');
+            
+            // Prepare CSRF token
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                             getCookie('csrftoken');
+            
+            // Send request to backend
+            fetch("{% url 'toggle_catalogue' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrftoken
+                },
+                body: new URLSearchParams({
+                    movie_id: movieId,
+                    status: isActive ? '' : status // Empty string to remove if already active
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove loading state
+                this.classList.remove('loading');
+                
+                if (data.success) {
+                    // Remove active class from all buttons
+                    statusButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button if it wasn't active
+                    if (!isActive) {
+                        this.classList.add('active');
+                    }
+                    
+                    // Optional: Show success feedback
+                    const icon = this.querySelector('i');
+                    const originalClass = icon.className;
+                    icon.className = 'bi bi-check-lg';
+                    setTimeout(() => {
+                        icon.className = originalClass;
+                    }, 1000);
+                }
+            })
+            .catch(error => {
+                this.classList.remove('loading');
+                console.error('Error:', error);
+                alert('Failed to update catalogue. Please try again.');
+            });
+        });
+    });
+    
+    // Helper function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 });
 </script>

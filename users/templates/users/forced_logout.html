@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Ended</title>
+    <meta http-equiv="refresh" content="3;url=/login/?reason=duplicate_session">
+    <style>
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            margin-top: 100px; 
+            background-color: #000;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .box {
+            border: 2px solid #00eaff;
+            padding: 30px;
+            display: inline-block;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 234, 255, 0.5);
+            max-width: 400px;
+            width: 90%;
+        }
+        h2 { color: #ff0077; }
+        p { margin: 15px 0; }
+        a { text-decoration: none; font-weight: bold; }
+        /* Style for Django Messages (simplified) */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .alert-error, .alert-danger {
+            color: #ffc2c2;
+            background-color: #8f0000;
+            border: 1px solid #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% else %}
+            <h2>❌ Session Ended</h2>
+            <p>Your account has been logged in on another device.</p>
+        {% endif %}
+        
+        <p>You will be redirected to the login page in 3 seconds.</p>
+        <p>
+            <a href="/login/?reason=duplicate_session" style="color:#00eaff;">
+                Click here if not redirected immediately
+            </a>
+        </p>
+    </div>
+</body>
+</html>
