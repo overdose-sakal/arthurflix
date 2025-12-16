@@ -76,42 +76,48 @@
         }
 
         /* === AVATAR PICKER === */
-        .avatar-picker {
-            display: none;
-            margin-top: 16px;
-        }
+.avatar-picker {
+    display: none;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
 
         .avatar-picker.show {
             display: block;
         }
 
-        .avatar-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            padding: 12px;
-            background: #141414;
-            border-radius: 10px;
-        }
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 24px;
+    padding: 20px;
+}
 
-        .avatar-item {
-            aspect-ratio: 1 / 1;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 4px solid transparent;
-            cursor: pointer;
-            transition: .2s;
-        }
+
+.avatar-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
 
         .avatar-item:hover {
             border-color: rgba(255,0,119,.5);
         }
 
-        .avatar-item.selected {
-            border-color: var(--gradient-end);
-            box-shadow: 0 0 12px var(--gradient-end);
-            transform: scale(1.05);
-        }
+.avatar-item.selected {
+    border-color: var(--gradient-end);
+    box-shadow: 
+        0 0 20px rgba(0, 234, 255, 0.9),
+        0 0 40px rgba(0, 234, 255, 0.6);
+    transform: scale(1.08);
+}
+
 
         .avatar-item img {
             width: 100%;
