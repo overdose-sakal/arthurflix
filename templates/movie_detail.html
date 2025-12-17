@@ -378,42 +378,56 @@
             <h6 class="mb-3 ps-2 fw-bold text-white">&#11088; Use VPN if video doesn't load.</h6>
             
             <div class="row g-3">
-                {% if movie.type == 'movies' %}
-                    {% if movie.streamSD_link %}
-                    <div class="col-md-6">
-                        <div class="btn-download-wrapper">
-                            <a href="{% url 'stream_movie' 'SD' movie.slug %}" class="text-decoration-none btn-download">
-                                <div class="d-flex align-items-center">
-                                    <div class="btn-icon"><i class="bi bi-play-fill"></i></div>
-                                    <div>
-                                        <div class="text-white fw-bold">Stream (SD)</div>
-                                        <div class="text-quality">Small Screens (480p)</div>
-                                    </div>
-                                </div>
-                                <span class="badge bg-secondary fw-bold">STREAM SD</span>
-                            </a>
-                        </div>
+{% if movie.type == 'movies' %}
+
+    {% if movie.streamSD_link %}
+    <div class="col-md-6">
+        <div class="btn-download-wrapper">
+            <a href="{% url 'stream_movie' 'SD' movie.slug %}"
+               class="text-decoration-none btn-download">
+                <div class="d-flex align-items-center">
+                    <div class="btn-icon">
+                        <i class="bi bi-play-fill"></i>
                     </div>
-                    {% endif %}
-                    
-                    {% if movie.streamHD_link %}
-                    <div class="col-md-6">
-                        <div class="btn-download-wrapper">
-                            <a href="{% url 'stream_movie' 'HD' movie.slug %}" class="text-decoration-none btn-download">
-                                <div class="d-flex align-items-center">
-                                    <div class="btn-icon"><i class="bi bi-play-btn-fill"></i></div> 
-                                    <div>
-                                        <div class="text-white fw-bold">Stream (HD)</div>
-                                        <div class="text-quality">Big Screens (720p)</div>
-                                    </div>
-                                </div>
-                                <span class="badge" style="background-color: var(--gradient-start); color: white; font-weight: 700;">STREAM HD</span>
-                            </a>
-                        </div>
+                    <div>
+                        <div class="text-white fw-bold">Stream (SD)</div>
+                        <div class="text-quality">Small Screens (480p)</div>
                     </div>
-                    {% endif %}
+                </div>
+                <span class="badge bg-secondary fw-bold">STREAM SD</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if movie.streamHD_link %}
+    <div class="col-md-6">
+        <div class="btn-download-wrapper">
+            <a href="{% url 'stream_movie' 'HD' movie.slug %}"
+               class="text-decoration-none btn-download">
+                <div class="d-flex align-items-center">
+                    <div class="btn-icon">
+                        <i class="bi bi-play-btn-fill"></i>
+                    </div>
+                    <div>
+                        <div class="text-white fw-bold">Stream (HD)</div>
+                        <div class="text-quality">Big Screens (720p)</div>
+                    </div>
+                </div>
+                <span class="badge"
+                      style="background-color: var(--gradient-start); color: white; font-weight: 700;">
+                      STREAM HD
+                </span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+{% endif %}
+
+
                 
-                {% elif movie.type in 'tv,anime' %}
+                {% if movie.type in 'tv,anime' %}
                 <div class="col-12">
                     <div class="btn-download-wrapper">
                         <a href="{% url 'episode_list' movie.slug %}" class="text-decoration-none btn-download">

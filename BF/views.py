@@ -176,32 +176,34 @@ def series_stream_page(request, slug):
 
 # --- NEW: Direct Movie Stream View ---
 # This is the destination when a user clicks 'Stream SD/HD' on a Movie detail page.
+@membership_required
 def stream_movie_view(request, quality, slug):
     movie = get_object_or_404(Movies, slug=slug)
-    
     quality = quality.upper()
-    
+
     if quality == 'SD':
         stream_url = movie.streamSD_link
-        content_name = f"{movie.title} (SD)"
     elif quality == 'HD':
         stream_url = movie.streamHD_link
-        content_name = f"{movie.title} (HD)"
     else:
-        raise Http404("Invalid quality specified.")
+        raise Http404("Invalid quality")
 
     if not stream_url:
-        return HttpResponse("Streaming link unavailable for this quality.", status=404)
+        return HttpResponse("Streaming link unavailable.", status=404)
 
+    # ⬇️ FAKE a single episode for movies
     context = {
-        'stream_url': stream_url,
-        'movie': movie,
-        'quality': quality,
-        'content_name': content_name,
+        "movie": movie,
+        "stream_url": stream_url,
+        "current_quality": quality,
+        "current_episode": {
+            "episode_number": 1
+        },
+        "episodes": None,  # IMPORTANT
     }
-    
-    # Renders the stream.html iframe page
-    return render(request, 'stream.html', context)
+
+    return render(request, "episode.html", context)
+
 
 
 # def stream_episode_view(request, quality, slug, episode_number):
