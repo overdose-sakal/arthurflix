@@ -17,9 +17,14 @@
             --bg-surface: #0a0a0a; 
             --text-main: #ffffff;
             --text-muted: #525252;
-            --gradient-start: #ff0077; 
-            --gradient-end: #00eaff; 
-            --main-gradient: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            --primary-accent: #6C63FF;
+            --secondary-accent: #00D4FF;
+            --main-gradient: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+
+            /* OPTIONAL: replace gradient vars if referenced */
+            --gradient-start: #6C63FF;
+            --gradient-end: #00D4FF;
+
             --watchlist-color: #ffd000;
             --finished-color: #00ff88;
             --recent-color: #ff00ff;
@@ -490,7 +495,7 @@
 <div class="profile-wrapper">
     <!-- Back Button -->
 <div class="back-btn-wrapper">
-    <a href="javascript:history.back()" class="back-btn">
+    <a href="{% url "home" %}" class="back-btn">
         <i class="bi bi-arrow-left"></i>
         Back
     </a>
@@ -690,6 +695,8 @@
 
       <form method="POST" action="{% url 'change_avatar' %}">
         {% csrf_token %}
+        <input type="hidden" name="avatar_id" id="id_avatar_id">
+
         <div class="modal-body">
           <div class="row g-3">
             {% for avatar in avatars %}
@@ -710,7 +717,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn btn-success">
+          <button type="submit" class="btn btn-primary">
             Save Avatar
           </button>
         </div>
@@ -726,6 +733,8 @@ document.querySelectorAll('.back-btn').forEach(btn => {
         btn.style.opacity = '0.7';
     });
 });
+
+
 </script>
 
 </body>

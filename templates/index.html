@@ -5,11 +5,9 @@
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BollyFun - Premium Access Point</title>
+    <title>BollyFun - Premium Access</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -18,296 +16,158 @@
             --bg-deep: #000000;
             --bg-surface: #0a0a0a;
             --text-main: #ffffff;
-            --text-muted: #525252;
-            --gradient-start: #ff0077;
-            --gradient-end: #00eaff;
-            --main-gradient: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            --text-muted: #888888;
+            --primary-accent: #6C63FF;
+            --secondary-accent: #00D4FF;
+            --main-gradient: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
         }
 
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
         }
 
-        .gradient-text {
-            background: var(--main-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* Navbar (Same as Category) */
+        .navbar { 
+            background: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            padding: 1rem 0; 
         }
-        .gradient-border-wrap {
-            position: relative;
-            padding: 2px;
-            border-radius: 12px;
-            background: var(--bg-surface);
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        .navbar-brand span { 
+            font-family: 'Space Mono', monospace; font-weight: 700; 
+            background: var(--main-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 1.5rem; letter-spacing: -1px;
         }
-        .gradient-border-wrap::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: conic-gradient(transparent 0%, var(--gradient-start) 45%, var(--gradient-end) 55%, transparent 100%);
-            z-index: 0;
-            animation: rotateGradient 4s linear infinite;
-            opacity: 0.8;
-        }
-        .gradient-border-wrap:hover::before { animation-duration: 2s; opacity: 1; }
-        .gradient-content {
-            position: relative; z-index: 1; background: var(--bg-surface); border-radius: 10px;
-        }
-        .btn-gradient {
-            background: var(--main-gradient); color: var(--bg-deep); border: none; font-weight: 700;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative; z-index: 2;
-        }
-        .btn-gradient:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 20px var(--gradient-end);
-        }
+        .nav-link { color: var(--text-muted) !important; margin-left: 1.5rem; font-weight: 500; }
+        .nav-link:hover, .nav-link.active { color: var(--text-main) !important; }
 
-        @keyframes rotateGradient {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .navbar-avatar {
+            width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--secondary-accent);
+            padding: 2px; cursor: pointer;
         }
-
-        .navbar {
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid #111;
-            padding: 1rem 0;
-        }
-        .navbar-brand span {
-            font-family: 'Space Mono', monospace;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--gradient-start);
-            text-shadow: 0 0 15px rgba(255, 0, 119, 0.5);
-            font-size: 1.5rem;
-        }
-        .nav-link { color: var(--text-muted) !important; }
-        .nav-link:hover, .nav-link.active { color: var(--text-main) !important; text-shadow: 0 0 5px white; }
-
-        .hero-section { padding: 160px 0 80px; }
-        .hero-title { font-family: 'Space Mono', monospace; font-weight: 700; }
+        .navbar-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         
-        .search-container { max-width: 800px; margin: 0 auto; }
-        .search-input {
-            background: transparent; border: none; color: white; padding: 20px 30px; font-size: 1.15rem;
-            box-shadow: none !important;
-        }
-        .search-input::placeholder { color: var(--text-muted); }
+        .mobile-avatar-toggle { position: fixed; top: 15px; right: 15px; z-index: 1060; width: 35px; height: 35px; }
+        .mobile-avatar-toggle .navbar-avatar { width: 100%; height: 100%; }
 
-        .search-btn {
-            padding: 0 30px; border-radius: 0 10px 10px 0;
+        /* Hero Section */
+        .hero-section { padding: 180px 0 80px; text-align: center; }
+        
+        .hero-title {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700; font-size: 3.5rem; line-height: 1.1;
+            margin-bottom: 20px;
         }
-        .search-btn i { font-size: 1.1rem; }
-
-        @media (max-width: 576px) {
-            .hero-section { padding: 120px 0 40px; }
-            .hero-title { font-size: 1.8rem; }
-            .lead { font-size: 0.9rem; }
-            
-            .search-input {
-                padding: 12px 20px !important; 
-                font-size: 1rem !important; 
-            }
-            .search-btn {
-                padding: 0 15px !important; 
-            }
-            .search-btn i { font-size: 0.9rem !important; }
-            .navbar-brand span { font-size: 1.3rem; }
-            .btn-sm { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
+        
+        .gradient-text {
+            background: var(--main-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        .lead-text {
+            color: var(--text-muted); font-size: 1.2rem; max-width: 600px; margin: 0 auto 50px;
+            animation: fadeIn 0.8s 0.2s ease-out forwards; opacity: 0;
         }
 
-        .movie-col { 
-            opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s ease-out forwards; 
+        /* Hero Search */
+        .hero-search-wrap {
+            max-width: 700px; margin: 0 auto;
+            position: relative; padding: 2px; border-radius: 50px;
+            background: linear-gradient(90deg, #222, #333);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
+        
+        .hero-search-wrap:focus-within {
+            background: var(--main-gradient);
+            box-shadow: 0 0 40px rgba(108, 99, 255, 0.3);
+        }
+
+        .search-inner {
+            background: #000; border-radius: 48px; display: flex; align-items: center; padding: 5px;
+        }
+        
+        .hero-input {
+            background: transparent; border: none; color: white; padding: 15px 30px; font-size: 1.1rem; flex-grow: 1;
+        }
+        .hero-input:focus { outline: none; }
+        
+        .hero-btn {
+            background: var(--main-gradient); color: white; border: none; padding: 12px 30px; border-radius: 40px; font-weight: 700;
+            transition: transform 0.2s;
+        }
+        .hero-btn:hover { transform: scale(1.05); }
+
+        /* Grid */
+        .movie-col { opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
         {% for i in "12345678"|make_list %}
         .movie-col:nth-child({{ i }}) { animation-delay: 0.{{ i }}s; }
         {% endfor %}
 
         .movie-card {
-            background: var(--bg-surface); border-radius: 8px; overflow: hidden; position: relative;
-            transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.5); height: 100%;
-            border: 1px solid transparent; 
+            background: #050505; border-radius: 16px; overflow: hidden; position: relative;
+            transition: all 0.4s; height: 100%; border: 1px solid rgba(255,255,255,0.05);
         }
         .movie-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px var(--gradient-end); 
-            border: 1px solid var(--gradient-start);
-            z-index: 2;
+            transform: translateY(-10px); border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6); z-index: 2;
         }
+        
+        .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; transition: transform 0.5s; }
+        .movie-card:hover img { transform: scale(1.05); filter: brightness(0.7); }
+        
+        .card-body { padding: 15px; text-align: center; background: linear-gradient(to bottom, #111, #050505); }
+        .movie-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.35;
 
-        .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .card-body { padding: 10px; }
+    /* IMPORTANT */
+    min-height: 3.9rem;   /* space for ~3 lines */
+    overflow-wrap: break-word;
+}
 
-        .movie-title { 
-            font-size: 0.9rem;
-            font-weight: 600; 
-            color: #fff; 
-            margin: 0; 
-            white-space: normal; 
-            display: -webkit-box;
-            -webkit-line-clamp: 2; 
-            -webkit-box-orient: vertical;  
-            overflow: hidden;
-            height: 4rem; 
-        }
 
-        .page-link { background: var(--bg-surface); border: 1px solid #333; color: var(--text-muted); border-radius: 6px; }
-        .page-link:hover, .page-item.active .page-link {
-            background: var(--main-gradient);
-            border-color: var(--gradient-end);
-            color: white;
-            box-shadow: 0 0 10px var(--gradient-end);
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* Floating + Button */
         .catalogue-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(0,0,0,0.8);
-            border: 2px solid var(--gradient-end);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            color: var(--gradient-end);
-            cursor: pointer;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
+            position: absolute; top: 10px; right: 10px; width: 35px; height: 35px;
+            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); border-radius: 50%;
+            color: white; display: flex; align-items: center; justify-content: center;
+            opacity: 0; transform: translateY(-10px); transition: all 0.3s; z-index: 10;
         }
-        .catalogue-btn:hover {
-            background: var(--gradient-end);
-            color: #000;
-            transform: scale(1.1);
+        .movie-card:hover .catalogue-btn { opacity: 1; transform: translateY(0); }
+        .catalogue-btn:hover { background: var(--main-gradient); border-color: transparent; }
+
+        /* Pagination */
+        .pagination .page-link { background: transparent; border: 1px solid #333; color: var(--text-muted); border-radius: 8px; margin: 0 3px; }
+        .pagination .page-item.active .page-link { background: var(--main-gradient); border-color: transparent; color: white; }
+
+        /* Modal */
+        .catalogue-modal .modal-content { background: #111; border: 1px solid #333; border-radius: 20px; }
+        .catalogue-modal .modal-header { border-bottom: 1px solid #222; }
+        .catalogue-option { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: all 0.2s; }
+        .catalogue-option:hover { background: #222; transform: translateX(5px); }
+        .watchlist-option:hover { border-color: #FFD700; }
+        .finished-option:hover { border-color: #00FF88; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 576px) {
+            .hero-title { font-size: 2.2rem; }
+            .hero-section { padding: 120px 0 50px; }
+            .catalogue-btn { opacity: 1; transform: translateY(0); }
         }
 
-        .navbar-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 2px solid var(--gradient-end);
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-        .navbar-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .navbar-avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(0, 234, 255, 0.8);
-        }
+        @media (max-width: 576px) {
+    .movie-title {
+        font-size: 0.95rem;
+        min-height: 4.2rem; /* ~3–4 lines */
+    }
+}
 
-        @media (max-width: 991.98px) {
-            .navbar-toggler { display: none !important; }
-            .mobile-avatar-toggle {
-                position: fixed;
-                top: 12px;
-                right: 12px;
-                z-index: 1051;
-            }
-        }
-
-        @media (min-width: 992px) {
-            .mobile-avatar-toggle { display: none; }
-        }
-
-        /* Catalogue Modal Styles */
-        .catalogue-modal .modal-content {
-            background: var(--bg-surface);
-            border: 2px solid var(--gradient-end);
-            border-radius: 15px;
-        }
-        
-        .catalogue-modal .modal-header {
-            border-bottom: 1px solid #222;
-            background: var(--bg-deep);
-        }
-        
-        .catalogue-modal .modal-title {
-            color: var(--text-main);
-            font-family: 'Space Mono', monospace;
-            font-weight: 700;
-        }
-        
-        .catalogue-modal .btn-close {
-            filter: invert(1);
-        }
-        
-        .catalogue-option {
-            background: var(--bg-deep);
-            border: 2px solid #222;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .catalogue-option:hover {
-            border-color: var(--gradient-end);
-            transform: translateX(5px);
-        }
-        
-        .catalogue-option i {
-            font-size: 2rem;
-        }
-        
-        .catalogue-option.watchlist-option {
-            border-color: #ffd000;
-        }
-        
-        .catalogue-option.watchlist-option:hover {
-            background: rgba(255, 208, 0, 0.1);
-            border-color: #ffd000;
-        }
-        
-        .catalogue-option.watchlist-option i {
-            color: #ffd000;
-        }
-        
-        .catalogue-option.finished-option {
-            border-color: #00ff88;
-        }
-        
-        .catalogue-option.finished-option:hover {
-            background: rgba(0, 255, 136, 0.1);
-            border-color: #00ff88;
-        }
-        
-        .catalogue-option.finished-option i {
-            color: #00ff88;
-        }
-        
-        .catalogue-option-text h5 {
-            margin: 0 0 5px 0;
-            font-weight: 600;
-        }
-        
-        .catalogue-option-text p {
-            margin: 0;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
     </style>
 </head>
 <body>
@@ -315,79 +175,52 @@
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
         <a class="navbar-brand me-auto" href="{% url 'home' %}">
-            <img src="{% static 'images/bf_logo.png' %}" alt="BollyFun"
-                 class="me-2" style="height:30px;">
+            <img src="{% static 'images/bf_logo.png' %}" alt="BF" class="me-2" style="height:32px;">
             <span>BOLLYFUN</span>
         </a>
-
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/movies/">Movies</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/tv/">TV Shows</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/anime/">Anime</a>
-                </li>
-
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/movies/">Movies</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/tv/">TV Shows</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/anime/">Anime</a></li>
                 {% if request.user.is_authenticated %}
-                <li class="nav-item d-lg-none">
-                    <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-                </li>
+                <li class="nav-item d-lg-none"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
                 {% endif %}
             </ul>
         </div>
-
         {% if request.user.is_authenticated and request.user.profile %}
-        <a href="{% url 'profile' %}" class="d-none d-lg-flex align-items-center ms-3">
-            <div class="navbar-avatar">
-                <img src="{{ request.user.profile.avatar.image_url }}"
-                     alt="{{ request.user.username }}">
-            </div>
+        <a href="{% url 'profile' %}" class="d-none d-lg-flex align-items-center ms-4">
+            <div class="navbar-avatar"><img src="{{ request.user.profile.avatar.image_url }}" alt="User"></div>
         </a>
         {% endif %}
     </div>
 </nav>
 
 {% if request.user.is_authenticated and request.user.profile %}
-<div class="mobile-avatar-toggle d-lg-none"
-     data-bs-toggle="collapse"
-     data-bs-target="#navbarResponsive"
-     aria-controls="navbarResponsive"
-     aria-expanded="false"
-     role="button">
-    <div class="navbar-avatar">
-        <img src="{{ request.user.profile.avatar.image_url }}"
-             alt="{{ request.user.username }}">
-    </div>
+<div class="mobile-avatar-toggle d-lg-none" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
+    <div class="navbar-avatar"><img src="{{ request.user.profile.avatar.image_url }}" alt="User"></div>
 </div>
 {% endif %}
 
-<div class="container hero-section text-center">
-    <h1 class="hero-title display-4 text-white mb-3">
-        ACCESS THE <span class="gradient-text">ULTIMATE</span> CATALOG
+<div class="container hero-section">
+    <h1 class="hero-title text-white">
+        ACCESS THE <span class="gradient-text">ULTIMATE</span><br>CATALOG
     </h1>
-    <p class="lead mb-5" style="color: var(--text-muted); max-width: 600px; margin: 0 auto; animation: fadeUp 0.8s 0.2s ease-out forwards; opacity: 0;">
-        The next level of ad-free movie downloads & streaming.
+    <p class="lead-text">
+        The next level of high-speed streaming & downloads.
     </p>
     
-    <div class="search-container mb-5 mt-5 gradient-border-wrap">
-        <div class="gradient-content p-0">
-            <form method="get" class="d-flex input-group">
-                <input type="search" class="form-control search-input" name="q" placeholder="Search a movie, show or anime..." value="{{ query }}">
-                <button class="btn search-btn btn-gradient" type="submit" style="border-radius: 0 10px 10px 0;">
-                    <i class="bi bi-search me-2"></i> Find Content
-                </button>
-            </form>
-        </div>
+    <div class="hero-search-wrap mb-5">
+        <form method="get" class="search-inner">
+            <input type="search" class="hero-input" name="q" placeholder="Find a movie, show or anime..." value="{{ query }}">
+            <button class="hero-btn" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 text-start">
         {% for movie in movies %}
         <div class="col-6 col-md-4 col-lg-3 movie-col">
             <a href="{% url 'movie_detail' slug=movie.slug %}" class="text-decoration-none">
@@ -396,7 +229,7 @@
                         <i class="bi bi-plus-lg"></i>
                     </button>
                     <img src="{{ movie.dp }}" alt="{{ movie.title }}" loading="lazy">
-                    <div class="card-body text-center">
+                    <div class="card-body">
                         <h4 class="movie-title">{{ movie.title }}</h4>
                     </div>
                 </div>
@@ -409,9 +242,7 @@
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center m-0">
                 {% if movies.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ movies.previous_page_number }}"><i class="bi bi-chevron-left"></i></a>
-                </li>
+                <li class="page-item"><a class="page-link" href="?page={{ movies.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
                 {% endif %}
 
                 {% for num in movies.paginator.page_range %}
@@ -423,9 +254,7 @@
                 {% endfor %}
 
                 {% if movies.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ movies.next_page_number }}"><i class="bi bi-chevron-right"></i></a>
-                </li>
+                <li class="page-item"><a class="page-link" href="?page={{ movies.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -433,31 +262,22 @@
     </div>
 </div>
 
-<!-- Catalogue Selection Modal -->
 <div class="modal fade catalogue-modal" id="catalogueModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add to Your Catalogue</h5>
+                <h5 class="modal-title text-white">Add to Library</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="text-center text-muted mb-4" id="modalMovieTitle"></p>
-                
+                <p class="text-center text-white mb-4" id="modalMovieTitle"></p>
                 <div class="catalogue-option watchlist-option" onclick="addToCatalogue('watchlist')">
-                    <i class="bi bi-bookmark-star-fill"></i>
-                    <div class="catalogue-option-text">
-                        <h5>Add to Watchlist</h5>
-                        <p>Save for later viewing</p>
-                    </div>
+                    <i class="bi bi-bookmark-star-fill text-warning fs-4"></i>
+                    <div><h5 class="text-white m-0">Watchlist</h5></div>
                 </div>
-                
                 <div class="catalogue-option finished-option" onclick="addToCatalogue('finished')">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <div class="catalogue-option-text">
-                        <h5>Mark as Finished</h5>
-                        <p>Already watched this</p>
-                    </div>
+                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                    <div><h5 class="text-white m-0">Mark as Finished</h5></div>
                 </div>
             </div>
         </div>
@@ -499,19 +319,10 @@ function addToCatalogue(status) {
     .then(data => {
         if (data.success) {
             catalogueModalInstance.hide();
-            
-            // Show success message
-            const message = data.status === 'removed' 
-                ? 'Removed from catalogue' 
-                : `Added to ${status}`;
-            
-            // You can add a toast notification here if you want
-            console.log(message);
+            console.log(data.status === 'removed' ? 'Removed' : `Added to ${status}`);
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    .catch(error => console.error('Error:', error));
 }
 </script>
 </body>

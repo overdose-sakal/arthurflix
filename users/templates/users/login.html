@@ -12,20 +12,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        :root {
-            --bg-deep: #000000; 
-            --bg-surface: #0a0a0a; 
-            --text-main: #ffffff;
-            --text-muted: #525252;
-            --gradient-start: #ff0077; 
-            --gradient-end: #00eaff; 
-            --main-gradient: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+:root {
+            --bg-deep: #000; --bg-surface: #0a0a0a; --text-muted: #a0a0a0;
+            --primary-accent: #6C63FF; --secondary-accent: #00D4FF;
+            --main-gradient: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
         }
+        body { background: var(--bg-deep); color: white; font-family: 'Outfit', sans-serif; padding: 40px 0; }
+        .reg-card { background: var(--bg-surface); border-radius: 20px; border: 1px solid #222; padding: 30px; max-width: 500px; margin: auto; }
+        .form-control { background: #111; border: 1px solid #333; color: white; border-radius: 8px; }
+        .avatar-item { border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+        .avatar-item.selected { border-color: var(--secondary-accent); box-shadow: 0 0 15px var(--secondary-accent); }
+        .btn-gradient { background: var(--main-gradient); color: white; border: none; font-weight: 700; border-radius: 8px; }
 
         body {
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+
             display: flex;
             justify-content: center;
             align-items: center;
@@ -224,8 +224,8 @@
         </div>
     </form>
 
-    <p class="text-center text-muted small mt-4">
-        Need an account? <a href="{% url 'register' %}" style="color: var(--gradient-end); text-decoration: none;">Register here.</a>
+    <p class="text-center text-light small mt-4">
+        Need an account? <a class="text-primary" href="{% url 'register' %}" style="color: var(--gradient-end); text-decoration: none;">Register here.</a>
     </p>
 </div>
 

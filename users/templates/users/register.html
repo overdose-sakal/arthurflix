@@ -12,22 +12,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        :root {
-            --bg-deep: #000;
-            --bg-surface: #0a0a0a;
-            --text-main: #fff;
-            --text-muted: #666;
-            --gradient-start: #ff0077;
-            --gradient-end: #00eaff;
-            --main-gradient: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            --input-bg: #1a1a1a;
-            --input-border: #333;
+:root {
+            --input-bg: #0f0f0f;
+--input-border: #2a2a2a;
+--text-main: #ffffff;
+--bg-deep: #000; --bg-surface: #0a0a0a; --text-muted: #a0a0a0;
+            --primary-accent: #6C63FF; --secondary-accent: #00D4FF;
+            --main-gradient: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
         }
+        body { background: var(--bg-deep); color: white; font-family: 'Outfit', sans-serif; padding: 40px 0; }
+        .reg-card { background: var(--bg-surface); border-radius: 20px; border: 1px solid #222; padding: 30px; max-width: 500px; margin: auto; }
+        .form-control { background: #111; border: 1px solid #333; color: white; border-radius: 8px; }
+        .avatar-item { border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+        .avatar-item.selected { border-color: var(--secondary-accent); box-shadow: 0 0 15px var(--secondary-accent); }
+        .btn-gradient { background: var(--main-gradient); color: white; border: none; font-weight: 700; border-radius: 8px; }
 
         body {
-            background: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -136,9 +136,10 @@ select {
 
 /* Placeholder color */
 ::placeholder {
-    color: #888 !important;
-    opacity: 1;
+    color: rgba(255,255,255,0.55) !important;
+    font-size: 0.9rem;
 }
+
 
 
 input[type="text"],
@@ -181,14 +182,14 @@ select {
     {% endif %}
 
     <!-- AVATAR TOGGLE -->
-    <div class="text-center mb-3">
+    {% comment %} <div class="text-center mb-3">
         <button type="button" id="avatarToggleBtn" class="btn btn-outline-info">
             <i class="bi bi-person-circle me-2"></i> Select Avatar
         </button>
-    </div>
+    </div> {% endcomment %}
 
     <!-- AVATAR PICKER -->
-    <div id="avatarPicker" class="avatar-picker">
+    {% comment %} <div id="avatarPicker" class="avatar-picker">
         <div class="avatar-grid">
             {% for avatar in avatars %}
             <div class="avatar-item" data-avatar-id="{{ avatar.id }}">
@@ -196,9 +197,19 @@ select {
             </div>
             {% endfor %}
         </div>
-    </div>
+    </div> {% endcomment %}
 
     <!-- FORM -->
+
+    <div class="text-center mb-4">
+    <button class="btn btn-outline-info"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#avatarModal">
+        <i class="bi bi-person-circle me-2"></i> Choose Avatar
+    </button>
+</div>
+
     <form method="POST" class="mt-4">
         {% csrf_token %}
 
@@ -223,45 +234,71 @@ select {
         </div>
     </form>
 
-    <p class="text-center text-muted mt-4">
+    <p class="text-center text-light mt-4">
         Already have an account?
-        <a href="{% url 'login' %}" style="color: var(--gradient-end); text-decoration:none;">
+        <a class="text-primary" href="{% url 'login' %}" style="color: var(--gradient-end); text-decoration:none;">
             Login
         </a>
     </p>
 </div>
 
+
+<!-- Avatar Selection Modal -->
+<div class="modal fade" id="avatarModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content" style="background:#0a0a0a; border:1px solid #222;">
+      <div class="modal-header">
+        <h5 class="modal-title text-white">Choose Your Avatar</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row g-3">
+          {% for avatar in avatars %}
+          <div class="col-3 text-center">
+            <img src="{{ avatar.image_url }}"
+                 data-avatar-id="{{ avatar.id }}"
+                 class="img-fluid rounded-circle avatar-select-img"
+                 style="cursor:pointer; border:3px solid transparent; transition:.2s;">
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+            Confirm Avatar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+
 document.addEventListener("DOMContentLoaded", () => {
-
-    const toggleBtn = document.getElementById("avatarToggleBtn");
-    const picker = document.getElementById("avatarPicker");
-    const avatars = document.querySelectorAll(".avatar-item");
     const avatarInput = document.getElementById("id_avatar_id");
+    const avatarImgs = document.querySelectorAll(".avatar-select-img");
 
-    toggleBtn.addEventListener("click", () => {
-        picker.classList.toggle("show");
-        toggleBtn.innerHTML = picker.classList.contains("show")
-            ? '<i class="bi bi-x-circle me-2"></i> Close Avatar Picker'
-            : '<i class="bi bi-person-circle me-2"></i> Select Avatar';
-    });
-
-    avatars.forEach(avatar => {
-        avatar.addEventListener("click", () => {
-            avatars.forEach(a => a.classList.remove("selected"));
-            avatar.classList.add("selected");
-            avatarInput.value = avatar.dataset.avatarId;
+    avatarImgs.forEach(img => {
+        img.addEventListener("click", () => {
+            avatarImgs.forEach(i => i.style.border = "3px solid transparent");
+            img.style.border = "3px solid #00eaff";
+            avatarInput.value = img.dataset.avatarId;
         });
     });
 
-    // Auto-select first avatar
-    if (avatars.length && avatarInput) {
-        avatars[0].click();
+    // auto select first avatar
+    if (avatarImgs.length) {
+        avatarImgs[0].click();
     }
 });
 </script>
+
+
 
 </body>
 </html>
