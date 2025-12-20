@@ -252,10 +252,13 @@
                 <h3 class="text-white fw-bold m-0" id="current-content-title">
                     {{ movie.title }} {% if movie.type != 'movies' %}- E{{ current_episode.episode_number }}{% endif %}
                 </h3>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-quality" id="quality-sd" data-quality="SD">SD</button>
-                    <button class="btn btn-quality" id="quality-hd" data-quality="HD">HD</button>
-                </div>
+{% if movie.type != 'movies' %}
+<div class="d-flex gap-2">
+    <button class="btn btn-quality" id="quality-sd" data-quality="SD">SD</button>
+    <button class="btn btn-quality" id="quality-hd" data-quality="HD">HD</button>
+</div>
+{% endif %}
+
             </div>
 
             <div class="mt-5">
@@ -324,35 +327,34 @@
         let currentEpisodeNum = {{ current_episode.episode_number }};
         let currentQuality = '{{ current_quality }}';
 
+        if (currentQuality !== 'HD' && currentQuality !== 'SD') {
+            currentQuality = 'SD';
+        }
+
+
         // 1. Initial State Setup
-        function setActiveEpisode(epNum, quality) {
-            episodeItems.forEach(item => {
-                if (parseInt(item.dataset.epNum) === epNum) {
-                    item.classList.add('active');
-                    document.getElementById('current-content-title').textContent = item.dataset.epTitle;
-                } else {
-                    item.classList.remove('active');
-                }
-            });
+function setActiveEpisode(epNum, quality) {
+    episodeItems.forEach(item => {
+        if (parseInt(item.dataset.epNum) === epNum) {
+            item.classList.add('active');
+            document.getElementById('current-content-title').textContent =
+                item.dataset.epTitle;
+        } else {
+            item.classList.remove('active');
+        }
+    });
 
-            // Update Quality Button Styles
-            [sdBtn, hdBtn].forEach(btn => {
-                btn.classList.remove('btn-quality-active', 'btn-quality-inactive');
-            });
-
-if (quality === 'HD' && hdUrl) {
-    streamUrl = hdUrl;
-} else if (quality === 'SD' && sdUrl) {
-    streamUrl = sdUrl;
-} else if (sdUrl) {
-    streamUrl = sdUrl;
-    newQuality = 'SD';
-} else if (hdUrl) {
-    streamUrl = hdUrl;
-    newQuality = 'HD';
+    // Update quality button styles
+    if (quality === 'HD') {
+        hdBtn.classList.add('btn-quality-active');
+        sdBtn.classList.add('btn-quality-inactive');
+    } else {
+        sdBtn.classList.add('btn-quality-active');
+        hdBtn.classList.add('btn-quality-inactive');
+    }
 }
 
-        }
+
 
         // 2. Function to load the stream
         function loadStream(epNum, quality) {
