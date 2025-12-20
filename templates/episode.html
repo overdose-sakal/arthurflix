@@ -311,113 +311,142 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    if ("{{ movie.type }}" === "movies") {
-    // Disable episode logic for movies
-    document.getElementById("quality-sd")?.classList.add("btn-quality-active");
-    return;
-}
+document.addEventListener('DOMContentLoaded', function () {
 
+    const iframe = document.getElementById('stream-iframe');
+    const episodeItems = document.querySelectorAll('.episode-item');
+    const sdBtn = document.getElementById('quality-sd');
+    const hdBtn = document.getElementById('quality-hd');
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const iframe = document.getElementById('stream-iframe');
-        const episodeItems = document.querySelectorAll('.episode-item');
-        const sdBtn = document.getElementById('quality-sd');
-        const hdBtn = document.getElementById('quality-hd');
-        
-        let currentEpisodeNum = {{ current_episode.episode_number }};
-        let currentQuality = '{{ current_quality }}';
+    // If this is a MOVIE page, nothing to do
+    if (!episodeItems.length) {
+        return;
+    }
 
-        if (currentQuality !== 'HD' && currentQuality !== 'SD') {
-            currentQuality = 'SD';
-        }
+    let currentEpisodeNum = {{ current_episode.episode_number }};
+    let currentQuality = '{{ current_quality }}';
 
+    // Fallback quality
+    if (currentQuality !== 'HD' && currentQuality !== 'SD') {
+        currentQuality = 'SD';
+    }
 
-        // 1. Initial State Setup
-function setActiveEpisode(epNum, quality) {
-    episodeItems.forEach(item => {
-        if (parseInt(item.dataset.epNum) === epNum) {
-            item.classList.add('active');
+    /* ----------------------------
+       UI HELPERS
+    ----------------------------- */
+
+    function updateActiveEpisode(epNum) {
+        episodeItems.forEach(item => {
+            item.classList.toggle(
+                'active',
+                parseInt(item.dataset.epNum) === epNum
+            );
+        });
+    }
+
+    function updateTitle(epNum) {
+        const item = document.querySelector(`.episode-item[data-ep-num="${epNum}"]`);
+        if (item) {
             document.getElementById('current-content-title').textContent =
                 item.dataset.epTitle;
-        } else {
-            item.classList.remove('active');
         }
-    });
-
-    // Update quality button styles
-    if (quality === 'HD') {
-        hdBtn.classList.add('btn-quality-active');
-        sdBtn.classList.add('btn-quality-inactive');
-    } else {
-        sdBtn.classList.add('btn-quality-active');
-        hdBtn.classList.add('btn-quality-inactive');
     }
-}
 
+    function updateQualityButtons(quality) {
+        if (!sdBtn || !hdBtn) return;
 
+        sdBtn.classList.toggle('btn-quality-active', quality === 'SD');
+        hdBtn.classList.toggle('btn-quality-active', quality === 'HD');
 
-        // 2. Function to load the stream
-        function loadStream(epNum, quality) {
-            const selectedItem = document.querySelector(`.episode-item[data-ep-num="${epNum}"]`);
-            if (!selectedItem) return;
+        sdBtn.classList.toggle('btn-quality-inactive', quality !== 'SD');
+        hdBtn.classList.toggle('btn-quality-inactive', quality !== 'HD');
+    }
 
-            const sdUrl = selectedItem.dataset.sdUrl;
-            const hdUrl = selectedItem.dataset.hdUrl;
-            let streamUrl = '';
-            let newQuality = quality;
+    /* ----------------------------
+       CORE STREAM LOADER
+    ----------------------------- */
 
-            // Priority: Requested quality
-            if (quality === 'HD' && hdUrl) {
-                streamUrl = hdUrl;
-            } else if (quality === 'SD' && sdUrl) {
-                streamUrl = sdUrl;
-            } else if (quality === 'HD' && sdUrl) {
-                // Fallback HD request to SD if HD is missing
-                streamUrl = sdUrl;
-                newQuality = 'SD';
-            } else if (quality === 'SD' && hdUrl) {
-                // Fallback SD request to HD if SD is missing
-                streamUrl = hdUrl;
-                newQuality = 'HD';
-            }
+    function loadEpisode(epNum, requestedQuality) {
+        const item = document.querySelector(`.episode-item[data-ep-num="${epNum}"]`);
+        if (!item) return;
 
-            if (streamUrl) {
-                iframe.src = streamUrl;
-                currentEpisodeNum = epNum;
-                currentQuality = newQuality;
-                setActiveEpisode(currentEpisodeNum, currentQuality);
-            } else {
-                // If stream is unavailable, just update the active states
-                setActiveEpisode(currentEpisodeNum, currentQuality); 
-            }
+        const sdUrl = item.dataset.sdUrl || '';
+        const hdUrl = item.dataset.hdUrl || '';
 
-            // Update the URL in the address bar without reloading
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.set('e', epNum);
-            newUrl.searchParams.set('q', currentQuality);
-            history.pushState(null, '', newUrl.toString());
+        let streamUrl = '';
+        let finalQuality = requestedQuality;
+
+        // Pick best available stream
+        if (requestedQuality === 'HD' && hdUrl) {
+            streamUrl = hdUrl;
+        } else if (requestedQuality === 'SD' && sdUrl) {
+            streamUrl = sdUrl;
+        } else if (sdUrl) {
+            streamUrl = sdUrl;
+            finalQuality = 'SD';
+        } else if (hdUrl) {
+            streamUrl = hdUrl;
+            finalQuality = 'HD';
         }
 
-        // 3. Episode Click Handler
-        episodeItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const epNum = parseInt(this.dataset.epNum);
-                loadStream(epNum, currentQuality); 
-            });
-        });
+        if (!streamUrl) {
+            console.warn('No stream available for episode', epNum);
+            return;
+        }
 
-        // 4. Quality Click Handler
-        [sdBtn, hdBtn].forEach(btn => {
-            btn.addEventListener('click', function() {
-                const quality = this.dataset.quality;
-                loadStream(currentEpisodeNum, quality);
-            });
-        });
+        // Update iframe ONLY if URL changes
+        if (iframe.src !== streamUrl) {
+            iframe.src = streamUrl;
+        }
 
-        // Initialize the page view
-        setActiveEpisode(currentEpisodeNum, currentQuality);
+        currentEpisodeNum = epNum;
+        currentQuality = finalQuality;
+
+        updateActiveEpisode(epNum);
+        updateTitle(epNum);
+        updateQualityButtons(finalQuality);
+
+        // Update URL without reload
+        const url = new URL(window.location.href);
+        url.searchParams.set('e', epNum);
+        url.searchParams.set('q', finalQuality);
+        history.replaceState(null, '', url.toString());
+    }
+
+    /* ----------------------------
+       EVENT BINDINGS
+    ----------------------------- */
+
+    episodeItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const epNum = parseInt(item.dataset.epNum);
+            loadEpisode(epNum, currentQuality);
+        });
     });
+
+    if (sdBtn) {
+        sdBtn.addEventListener('click', () => {
+            loadEpisode(currentEpisodeNum, 'SD');
+        });
+    }
+
+    if (hdBtn) {
+        hdBtn.addEventListener('click', () => {
+            loadEpisode(currentEpisodeNum, 'HD');
+        });
+    }
+
+    /* ----------------------------
+       INITIAL STATE
+    ----------------------------- */
+
+    updateActiveEpisode(currentEpisodeNum);
+    updateTitle(currentEpisodeNum);
+    updateQualityButtons(currentQuality);
+
+});
 </script>
+
 
 </body>
 </html>
