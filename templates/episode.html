@@ -261,7 +261,8 @@
             <div class="mt-5">
                 <h1 class="text-white fw-extrabold mb-2" style="font-size: 2.5rem;">{{ movie.title }}</h1>
                 <div class="movie-meta d-flex align-items-center gap-3 mb-4">
-                    <span class="gradient-text">{{ movie.type|upper }}</span>
+                    <span class="text-white-50 d-inline-block">{{ movie.type|upper }}</span>
+
                     <span class="text-white-50 fw-bold">{{ movie.upload_date|date:"Y" }}</span>
                     {% if movie.type != 'movies' %}
                         <span class="text-white-50 fw-bold">{{ movie.num_episodes }} Episodes</span>
@@ -339,13 +340,18 @@
                 btn.classList.remove('btn-quality-active', 'btn-quality-inactive');
             });
 
-            if (quality === 'SD') {
-                sdBtn.classList.add('btn-quality-active'); 
-                hdBtn.classList.add('btn-quality-inactive'); 
-            } else {
-                sdBtn.classList.add('btn-quality-inactive'); 
-                hdBtn.classList.add('btn-quality-active');
-            }
+if (quality === 'HD' && hdUrl) {
+    streamUrl = hdUrl;
+} else if (quality === 'SD' && sdUrl) {
+    streamUrl = sdUrl;
+} else if (sdUrl) {
+    streamUrl = sdUrl;
+    newQuality = 'SD';
+} else if (hdUrl) {
+    streamUrl = hdUrl;
+    newQuality = 'HD';
+}
+
         }
 
         // 2. Function to load the stream

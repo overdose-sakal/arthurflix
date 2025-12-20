@@ -265,6 +265,16 @@
     }
 }
 
+.navbar-toggler {
+    border: none;
+    padding: 0;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+
     </style>
 </head>
 <body>
@@ -275,6 +285,16 @@
             <img src="{% static 'images/bf_logo.png' %}" alt="BF" class="me-2" style="height:32px;">
             <span>BOLLYFUN</span>
         </a>
+
+        <button class="navbar-toggler d-lg-none"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarResponsive"
+        aria-controls="navbarResponsive"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+    <i class="bi bi-list fs-1 text-white"></i>
+</button>
 
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ms-auto align-items-center">
@@ -298,13 +318,8 @@
     </div>
 </nav>
 
-{% if request.user.is_authenticated and request.user.profile %}
-<div class="mobile-avatar-toggle d-lg-none" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
-    <div class="navbar-avatar">
-        <img src="{{ request.user.profile.avatar.image_url }}" alt="User">
-    </div>
-</div>
-{% endif %}
+
+
 
 <div class="container header-section">
     <h3 class="section-title text-uppercase">{{ category_name|default:"Browse All" }}</h3>
