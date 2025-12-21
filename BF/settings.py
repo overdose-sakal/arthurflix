@@ -21,38 +21,40 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 import cloudinary.uploader
 import cloudinary.api
 
-CLOUDINARY_CLOUD_NAME = 'dmryeq2dv' # Replace with your Cloud Name
-CLOUDINARY_API_KEY = '152447812159866'       # Replace with your API Key
-CLOUDINARY_API_SECRET = 'UomA0R0FHGtw5H708V_G1Yixa-s' # Replace with your API Secret
+# CLOUDINARY_CLOUD_NAME = 'dmryeq2dv' 
+# CLOUDINARY_API_KEY = '152447812159866'      
+# CLOUDINARY_API_SECRET = 'UomA0R0FHGtw5H708V_G1Yixa-s' 
+
+CLOUDINARY_CLOUD_NAME = os.environ.get("CLOUDINARY_CLOUD_NAME")
+CLOUDINARY_API_KEY = os.environ.get("CLOUDINARY_API_KEY")
+CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET")
+
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-o_de1^_tmf1yk8jatu=f92jt=7*$ke&o)fmk_c3w0$xog_)=gl')
+SECRET_KEY = os.environ["SECRET_KEY"]
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.environ.get('DEBUG', 'True') == 'True'a
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+
 
 # MULTI-DOMAIN SUPPORT
 ALLOWED_HOSTS = [
-    'localhost', 
-    '127.0.0.1', 
-    '.onrender.com',
-    'bollyfun.onrender.com',  # Primary domain
-    'arthurflix.onrender.com',  # Backup domain
-    # Add custom domains here when you get them
-    # 'www.bollyfun.com',
-    # 'www.arthurflix.com',
+    "localhost",
+    "127.0.0.1",
+    ".railway.app",
 ]
+
 
 LOGIN_URL = '/login/'
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://arthurflix.onrender.com",
-    "https://bollyfun.onrender.com",
+    "https://arthurflix.up.railway.app",
 ]
 
 
@@ -197,12 +199,13 @@ SITE_DOMAINS = {
         'logo': 'images/bf_logo.png',
         'primary_color': '#00c9d4ff',
     },
-    'arthurflix': {
-        'name': 'ArthurFlix',
-        'domain': os.environ.get('ARTHURFLIX_DOMAIN', 'https://arthurflix.onrender.com'),
-        'logo': 'images/arthurflix_logo.png',  # You'll need to add this logo
-        'primary_color': '#e50914',  # Netflix-style red
-    }
+'arthurflix': {
+    'domain': os.environ.get(
+        'ARTHURFLIX_DOMAIN',
+        'https://arthurflix.up.railway.app'
+    ),
+}
+
 }
 
 # Default site (fallback)
