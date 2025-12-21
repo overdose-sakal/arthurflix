@@ -35,8 +35,7 @@ CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET")
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ["SECRET_KEY"]
-
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-o_de1^_tmf1yk8jatu=f92jt=7*$ke&o)fmk_c3w0$xog_)=gl')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.environ.get('DEBUG', 'True') == 'True'a
@@ -54,7 +53,8 @@ ALLOWED_HOSTS = [
 LOGIN_URL = '/login/'
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://arthurflix.up.railway.app",
+    "https://arthurflix.onrender.com",
+    "https://bollyfun.onrender.com",
 ]
 
 
@@ -195,26 +195,17 @@ SHRINK_API_ENDPOINT = 'https://shrinkearn.com/api'
 SITE_DOMAINS = {
     'bollyfun': {
         'name': 'BollyFun',
-        'domain': os.environ.get(
-            'BOLLYFUN_DOMAIN',
-            'https://bollyfun.onrender.com'
-        ),
+        'domain': os.environ.get('BOLLYFUN_DOMAIN', 'https://bollyfun.onrender.com'),
         'logo': 'images/bf_logo.png',
         'primary_color': '#00c9d4ff',
     },
     'arthurflix': {
         'name': 'ArthurFlix',
-        'domain': os.environ.get(
-            'ARTHURFLIX_DOMAIN',
-            'https://arthurflix.up.railway.app'
-        ),
-        'logo': 'images/BF_logo.png',  # or reuse BF logo
-        'primary_color': "#0088ffff",
-    },
+        'domain': os.environ.get('ARTHURFLIX_DOMAIN', 'https://arthurflix.onrender.com'),
+        'logo': 'images/arthurflix_logo.png',  # You'll need to add this logo
+        'primary_color': '#e50914',  # Netflix-style red
+    }
 }
-
-DEFAULT_SITE = 'bollyfun'
-
 
 # Default site (fallback)
 DEFAULT_SITE = 'bollyfun'
