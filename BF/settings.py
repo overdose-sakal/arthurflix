@@ -85,7 +85,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # ADD THIS NEW LINE RIGHT AFTER AuthenticationMiddleware 
     'django.contrib.messages.middleware.MessageMiddleware',
-    # 'users.middleware.SingleSessionMiddleware',
+    'users.middleware.SingleSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
 ]
@@ -195,18 +195,26 @@ SHRINK_API_ENDPOINT = 'https://shrinkearn.com/api'
 SITE_DOMAINS = {
     'bollyfun': {
         'name': 'BollyFun',
-        'domain': os.environ.get('BOLLYFUN_DOMAIN', 'https://bollyfun.onrender.com'),
+        'domain': os.environ.get(
+            'BOLLYFUN_DOMAIN',
+            'https://bollyfun.onrender.com'
+        ),
         'logo': 'images/bf_logo.png',
         'primary_color': '#00c9d4ff',
     },
-'arthurflix': {
-    'domain': os.environ.get(
-        'ARTHURFLIX_DOMAIN',
-        'https://arthurflix.up.railway.app'
-    ),
+    'arthurflix': {
+        'name': 'ArthurFlix',
+        'domain': os.environ.get(
+            'ARTHURFLIX_DOMAIN',
+            'https://arthurflix.up.railway.app'
+        ),
+        'logo': 'images/BF_logo.png',  # or reuse BF logo
+        'primary_color': "#0088ffff",
+    },
 }
 
-}
+DEFAULT_SITE = 'bollyfun'
+
 
 # Default site (fallback)
 DEFAULT_SITE = 'bollyfun'
