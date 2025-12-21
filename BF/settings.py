@@ -33,7 +33,8 @@ CLOUDINARY_API_SECRET = 'UomA0R0FHGtw5H708V_G1Yixa-s' # Replace with your API Se
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-o_de1^_tmf1yk8jatu=f92jt=7*$ke&o)fmk_c3w0$xog_)=gl')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# DEBUG = os.environ.get('DEBUG', 'True') == 'True'a
+DEBUG = True
 
 # MULTI-DOMAIN SUPPORT
 ALLOWED_HOSTS = [
@@ -48,6 +49,12 @@ ALLOWED_HOSTS = [
 ]
 
 LOGIN_URL = '/login/'
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://arthurflix.onrender.com",
+    "https://bollyfun.onrender.com",
+]
+
 
 
 # Application definition
