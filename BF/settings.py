@@ -85,7 +85,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # ADD THIS NEW LINE RIGHT AFTER AuthenticationMiddleware 
     'django.contrib.messages.middleware.MessageMiddleware',
-    'users.middleware.SingleSessionMiddleware',
+    # 'users.middleware.SingleSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
 ]
