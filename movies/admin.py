@@ -212,7 +212,11 @@ from django.shortcuts import render
 from .models import Episodes
 
 class EpisodeCSVImportAdmin(admin.ModelAdmin):
-    change_list_template = "admin/episode_csv_upload.html"
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context["show_import"] = True
+        return super().changelist_view(request, extra_context=extra_context)
+
 
     def get_urls(self):
         urls = super().get_urls()
@@ -252,7 +256,8 @@ class EpisodeCSVImportAdmin(admin.ModelAdmin):
             )
             return HttpResponseRedirect("../")
 
-        return render(request, "admin/episode_csv_upload.html")
+        return render(request, "admin/episodes_import_form.html")
+
 
 
 admin.site.register(Episodes, EpisodeCSVImportAdmin)
