@@ -10,21 +10,21 @@ python manage.py collectstatic --noinput
 echo "🧱 Running migrations"
 python manage.py migrate
 
-echo "👤 Creating superuser (if not exists)"
-python manage.py shell << EOF
-from django.contrib.auth import get_user_model
-User = get_user_model()
+# echo "👤 Creating superuser (if not exists)"
+# python manage.py shell << EOF
+# from django.contrib.auth import get_user_model
+# User = get_user_model()
 
-username = "sakal"
-password = "Salibill1"
+# username = "sakal"
+# password = "Salibill1"
 
-if not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(
-        username=username,
-        email="mdsakibulhussain08@gmail.com",
-        password=password
-    )
-    print("✅ Superuser created")
-else:
-    print("ℹ️ Superuser already exists")
-EOF
+# if not User.objects.filter(username=username).exists():
+#     User.objects.create_superuser(
+#         username=username,
+#         email="mdsakibulhussain08@gmail.com",
+#         password=password
+#     )
+#     print("✅ Superuser created")
+# else:
+#     print("ℹ️ Superuser already exists")
+# EOF

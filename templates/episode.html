@@ -243,7 +243,7 @@
 
 <div class="container content-wrapper">
     <div class="row g-4">
-        <div class="col-lg-9">
+        <div class="col-lg-9 order-2 order-lg-1">
             <div class="video-player-wrapper">
                 <iframe id="stream-iframe" src="{{ stream_url }}" allowfullscreen class="video-iframe"></iframe>
             </div>
@@ -274,7 +274,7 @@
 
                 {% if movie.description %}
                 <div class="description-panel mt-4 p-4" style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                    <h5 class="gradient-text mb-3" style="letter-spacing: 2px; font-size: 0.9rem;">SYNOPSIS</h5>
+                    <h5 class="text-light mb-3" style="letter-spacing: 2px; font-size: 0.9rem;">SYNOPSIS</h5>
                     <p class="text-white opacity-75 mb-0" style="line-height: 1.8; font-size: 1.05rem; max-width: 900px;">
                         {{ movie.description|linebreaksbr }}
                     </p>
@@ -284,7 +284,7 @@
         </div>
  
         {% if movie.type != 'movies' %}
-        <div class="col-lg-3">
+        <div class="col-lg-3 order-1 order-lg-2">
             <div class="info-panel">
                 <h6 class="mb-4 fw-bold text-center opacity-50 text-uppercase" style="letter-spacing: 2px;">Select Episode</h6>
                 <div class="row g-2">

@@ -198,3 +198,61 @@ class SentFileAdmin(admin.ModelAdmin):
     list_filter = ['quality', 'sent_at']
     search_fields = ['chat_id', 'movie__title']
     readonly_fields = ['sent_at', 'delete_at']
+
+
+
+
+# movies/admin.py
+
+import csv
+from django.contrib import admin, messages
+from django.http import HttpResponseRedirect
+from django.urls import path
+from django.shortcuts import render
+from .models import Episodes
+
+class EpisodeCSVImportAdmin(admin.ModelAdmin):
+    change_list_template = "admin/episode_csv_upload.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path("import-csv/", self.import_csv),
+        ]
+        return custom_urls + urls
+
+    def import_csv(self, request):
+        if request.method == "POST":
+            csv_file = request.FILES.get("csv_file")
+
+            if not csv_file.name.endswith(".csv"):
+                self.message_user(request, "Please upload a CSV file.", level=messages.ERROR)
+                return HttpResponseRedirect(request.path_info)
+
+            data = csv_file.read().decode("utf-8").splitlines()
+            reader = csv.DictReader(data)
+
+            created = 0
+            for row in reader:
+                _, was_created = Episodes.objects.update_or_create(
+                    movie_id=row["movie_id"],
+                    episode_number=int(row["episode_number"]),
+                    defaults={
+                        "streamSD_link": row["streamSD_link"],
+                        "streamHD_link": row.get("streamHD_link") or None,
+                    },
+                )
+                if was_created:
+                    created += 1
+
+            self.message_user(
+                request,
+                f"CSV import complete. {created} episodes created/updated.",
+                level=messages.SUCCESS,
+            )
+            return HttpResponseRedirect("../")
+
+        return render(request, "admin/episode_csv_upload.html")
+
+
+admin.site.register(Episodes, EpisodeCSVImportAdmin)
