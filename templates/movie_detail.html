@@ -1,3 +1,4 @@
+{% load static custom_filters %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -211,6 +212,11 @@
             <div class="poster-card">
                 <img src="{{ movie.dp }}" alt="{{ movie.title }}">
             </div>
+
+            <div class="d-flex align-items-center justify-content-center gap-2 mt-3 text-white-50 font-monospace">
+    <i class="bi bi-eye-fill"></i>
+    <span>{{ movie.views|compact_number }} views</span>
+</div>
 
             <div class="action-grid">
                 <button class="status-btn watchlist" data-status="watchlist" data-movie-id="{{ movie.id }}">

@@ -94,6 +94,10 @@ def Movie(request, slug):
     if request.user.is_authenticated:
         MovieVisit.record_visit(request.user, movie)
 
+    movie.views += 1
+    movie.save(update_fields=['views']) 
+
+
     # Check if download is available via Telegram file_id OR direct link
     sd_download_url = bool(movie.SD_telegram_file_id or movie.SD_link)
     hd_download_url = bool(movie.HD_telegram_file_id or movie.HD_link)

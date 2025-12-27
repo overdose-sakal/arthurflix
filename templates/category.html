@@ -1,3 +1,4 @@
+{% load static custom_filters %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -274,6 +275,28 @@
     box-shadow: none;
 }
 
+/* Translucent View Badge */
+.views-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 5;
+    pointer-events: none; /* Let clicks pass through to the movie */
+}
+.views-badge i {
+    color: var(--secondary-accent); /* Or just #fff if you prefer plain white */
+}
 
     </style>
 </head>
@@ -347,6 +370,9 @@
             <a href="{% url 'movie_detail' slug=movie.slug %}" class="text-decoration-none">
                 <div class="movie-card">
                     <div class="img-wrapper">
+                        <div class="views-badge">
+    <i class="bi bi-eye-fill"></i> {{ movie.views|compact_number }}
+</div>
                         <button class="catalogue-btn" data-movie-id="{{ movie.id }}" data-movie-title="{{ movie.title }}" onclick="event.preventDefault(); openCatalogueModal(this);">
                             <i class="bi bi-plus-lg"></i>
                         </button>

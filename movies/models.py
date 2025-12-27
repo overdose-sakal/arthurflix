@@ -33,7 +33,7 @@ class Movies(models.Model):
     created_at = models.DateField(auto_now_add=True)
 
 
-    
+    views = models.PositiveIntegerField(default=0, help_text="Total number of times this movie page has been viewed.")
 
     #telegram links
     SD_telegram_file_id = models.CharField(max_length=500, blank=True, null=True)
