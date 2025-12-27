@@ -102,10 +102,19 @@ def Movie(request, slug):
     sd_download_url = bool(movie.SD_telegram_file_id or movie.SD_link)
     hd_download_url = bool(movie.HD_telegram_file_id or movie.HD_link)
 
+    user_catalogue_status = None
+    if request.user.is_authenticated:
+        # Check if this user has this movie in watchlist or finished
+        from users.models import UserCatalogueItem # Ensure import
+        item = UserCatalogueItem.objects.filter(user=request.user, movie=movie).first()
+        if item:
+            user_catalogue_status = item.status
+
     return render(request, "movie_detail.html", {
         "movie": movie,
         "sd_download_url": sd_download_url,
         "hd_download_url": hd_download_url,
+        "user_catalogue_status": user_catalogue_status,
     })
 
 

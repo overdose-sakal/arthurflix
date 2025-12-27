@@ -294,8 +294,14 @@
     z-index: 5;
     pointer-events: none; /* Let clicks pass through to the movie */
 }
-.views-badge i {
-    color: var(--secondary-accent); /* Or just #fff if you prefer plain white */
+/* ✅ CORRECT CSS: Only color the eye blue, leave heart red */
+.views-badge i.bi-eye-fill {
+    color: var(--secondary-accent);
+}
+/* The heart already has class 'text-danger' in HTML, 
+   but this ensures it overrides any conflicts */
+.views-badge i.bi-heart-fill {
+    color: #e91e63 !important; 
 }
 
     </style>

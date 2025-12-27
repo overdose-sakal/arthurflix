@@ -224,19 +224,22 @@
     <span>{{ movie.views|compact_number }} views</span>
 </div>
 
-            <div class="action-grid">
-                <button class="status-btn like-btn {% if request.user in movie.likes.all %}active{% endif %}" 
-        onclick="toggleLike(this, '{{ movie.id }}')">
-    <i class="bi bi-heart{% if request.user in movie.likes.all %}-fill{% endif %}"></i> 
-    <span class="like-count">{{ movie.likes.count|compact_number }}</span> Likes
-</button>
-                <button class="status-btn watchlist" data-status="watchlist" data-movie-id="{{ movie.id }}">
-                    <i class="bi bi-bookmark-plus"></i> Watchlist
-                </button>
-                <button class="status-btn finished" data-status="finished" data-movie-id="{{ movie.id }}">
-                    <i class="bi bi-check2-circle"></i> Finished
-                </button>
-            </div>
+<div class="mb-3">
+    <button class="status-btn like-btn w-100 justify-content-center {% if request.user in movie.likes.all %}active{% endif %}" 
+            onclick="toggleLike(this, '{{ movie.id }}')">
+        <i class="bi bi-heart{% if request.user in movie.likes.all %}-fill{% endif %}"></i> 
+        <span class="like-count">{{ movie.likes.count|compact_number }}</span> Likes
+    </button>
+</div>
+
+<div class="action-grid">
+    <button class="status-btn watchlist" data-status="watchlist" data-movie-id="{{ movie.id }}">
+        <i class="bi bi-bookmark-plus"></i> Watchlist
+    </button>
+    <button class="status-btn finished" data-status="finished" data-movie-id="{{ movie.id }}">
+        <i class="bi bi-check2-circle"></i> Finished
+    </button>
+</div>
 
 <div class="specs-panel d-none d-lg-block">
     <div class="section-header mb-3">FILE DETAILS</div>

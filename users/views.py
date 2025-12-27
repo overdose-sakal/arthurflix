@@ -291,7 +291,7 @@ def user_profile(request):
         .order_by("-visited_at")[:3]
     )
 
-    liked_movies = request.user.liked_movies.all().order_by('-id')
+    
 
     context = {
         "user": request.user,
@@ -299,12 +299,12 @@ def user_profile(request):
         "watchlist": grouped.get("watchlist", []),
         "finished": grouped.get("finished", []),
         "recent_visits": recent_visits,
-        "liked_movies": liked_movies,
     }
 
     from .models import Avatar
 
     avatars = Avatar.objects.all()
+    liked_movies = request.user.liked_movies.all()
 
     context = {
         "user": request.user,
@@ -313,6 +313,7 @@ def user_profile(request):
         "finished": grouped.get("finished", []),
         "recent_visits": recent_visits,
         "avatars": avatars,  # 👈 ADD THIS
+        "liked_movies": liked_movies,
     }
 
 
