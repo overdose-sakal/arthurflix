@@ -291,12 +291,15 @@ def user_profile(request):
         .order_by("-visited_at")[:3]
     )
 
+    liked_movies = request.user.liked_movies.all().order_by('-id')
+
     context = {
         "user": request.user,
         "profile": profile,
         "watchlist": grouped.get("watchlist", []),
         "finished": grouped.get("finished", []),
         "recent_visits": recent_visits,
+        "liked_movies": liked_movies,
     }
 
     from .models import Avatar
@@ -407,3 +410,28 @@ def change_avatar(request):
 
     messages.success(request, "Avatar updated successfully!")
     return redirect("profile")
+
+
+# users/views.py
+
+@login_required
+def toggle_like(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False}, status=405)
+
+    movie_id = request.POST.get("movie_id")
+    movie = get_object_or_404(Movies, id=movie_id)
+
+    # Toggle logic
+    if movie.likes.filter(id=request.user.id).exists():
+        movie.likes.remove(request.user)
+        action = 'removed'
+    else:
+        movie.likes.add(request.user)
+        action = 'added'
+
+    return JsonResponse({
+        "success": True, 
+        "action": action, 
+        "count": movie.likes.count() # Return new count for frontend update
+    })

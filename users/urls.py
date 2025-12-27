@@ -21,5 +21,5 @@ urlpatterns = [
     path('catalogue/status/<int:movie_id>/', views.get_catalogue_status, name='get_catalogue_status'),
 
     path("profile/change-avatar/", views.change_avatar, name="change_avatar"),
-
+    path('like/toggle/', views.toggle_like, name='toggle_like'),
 ]

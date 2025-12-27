@@ -502,7 +502,8 @@
     }
 }
 
-
+.section-header.liked-header { color: #e91e63; } /* Pink for Likes */
+.badge-liked { background: #e91e63; color: white; }
     </style>
 </head>
 <body>
@@ -622,6 +623,40 @@
     </div>
     {% endif %}
 
+
+    <div class="section-header liked-header">
+    <i class="bi bi-heart-fill"></i>
+    Liked Collection
+    <span class="section-count">({{ liked_movies|length }})</span>
+</div>
+
+{% if liked_movies %}
+<div class="movie-grid">
+    {% for movie in liked_movies %}
+    <a href="{% url 'movie_detail' slug=movie.slug %}" class="text-decoration-none">
+        <div class="movie-card">
+            <span class="status-badge badge-liked">
+                <i class="bi bi-heart-fill"></i> Liked
+            </span>
+            {% if movie.dp %}
+            <img src="{{ movie.dp }}" alt="{{ movie.title }}" class="movie-poster" loading="lazy">
+            {% else %}
+            <div style="width: 100%; aspect-ratio: 2/3; background: var(--bg-deep);"></div>
+            {% endif %}
+            <div class="card-body">
+                <h4 class="movie-title">{{ movie.title }}</h4>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="bi bi-heart"></i>
+    <h4>No Liked Movies Yet</h4>
+    <p>Hit the heart button on movies you love!</p>
+</div>
+{% endif %}
     <!-- Watchlist Section -->
     <div class="section-header watchlist-header">
         <i class="bi bi-bookmark-star-fill"></i>

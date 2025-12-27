@@ -192,6 +192,12 @@
             .meta-tags { justify-content: center; }
             .synopsis-box { border-left: none; border-top: 3px solid var(--primary-accent); }
         }
+
+        .like-btn.active {
+    background: #e91e63; /* Pink color */
+    border-color: #e91e63;
+    box-shadow: 0 0 20px rgba(233, 30, 99, 0.4);
+}
     </style>
 </head>
 <body>
@@ -219,6 +225,11 @@
 </div>
 
             <div class="action-grid">
+                <button class="status-btn like-btn {% if request.user in movie.likes.all %}active{% endif %}" 
+        onclick="toggleLike(this, '{{ movie.id }}')">
+    <i class="bi bi-heart{% if request.user in movie.likes.all %}-fill{% endif %}"></i> 
+    <span class="like-count">{{ movie.likes.count|compact_number }}</span> Likes
+</button>
                 <button class="status-btn watchlist" data-status="watchlist" data-movie-id="{{ movie.id }}">
                     <i class="bi bi-bookmark-plus"></i> Watchlist
                 </button>
@@ -483,6 +494,40 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function toggleLike(btn, movieId) {
+    btn.classList.add('loading');
+    
+    // Optimistic UI Update (Instant toggle visual)
+    const icon = btn.querySelector('i');
+    const isActive = btn.classList.contains('active');
+    
+    if (isActive) {
+        btn.classList.remove('active');
+        icon.classList.replace('bi-heart-fill', 'bi-heart');
+    } else {
+        btn.classList.add('active');
+        icon.classList.replace('bi-heart', 'bi-heart-fill');
+    }
+
+    fetch("{% url 'toggle_like' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: new URLSearchParams({ movie_id: movieId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.classList.remove('loading');
+        if (data.success) {
+            // Update the number with 1k/1M format logic if needed, 
+            // or just simple count for now since JS formatting is complex
+            btn.querySelector('.like-count').innerText = data.count; 
+        }
+    });
+}
 </script>
 </body>
 </html>

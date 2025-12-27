@@ -6,6 +6,8 @@ from datetime import timedelta
 from django.utils import timezone
 import secrets
 import string
+from django.conf import settings
+
 
 
 # Create your models here.
@@ -34,6 +36,8 @@ class Movies(models.Model):
 
 
     views = models.PositiveIntegerField(default=0, help_text="Total number of times this movie page has been viewed.")
+
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_movies', blank=True)
 
     #telegram links
     SD_telegram_file_id = models.CharField(max_length=500, blank=True, null=True)
