@@ -87,12 +87,12 @@
             margin-bottom: 20px;
             opacity: 0;
             animation: slideUp 0.8s ease-out forwards;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.8); /* Added shadow for readability over slider */
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
         .hero-desc {
             font-size: 1.2rem;
-            color: #d0d0d0; /* Slightly brighter for readability */
+            color: #d0d0d0;
             max-width: 600px;
             margin: 0 auto 30px;
             opacity: 0;
@@ -103,7 +103,7 @@
         .price-tag {
             display: inline-block;
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px); /* Blur behind tag */
+            backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 8px 20px;
             border-radius: 50px;
@@ -156,7 +156,7 @@
 
         /* --- INFO CARD (Glass Textbox) --- */
         .info-card {
-            background: rgba(0, 0, 0, 0.6); /* Darker bg for readability */
+            background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -211,31 +211,30 @@
         /* --- SLIDER CSS --- */
         .slider-section {
             position: absolute;
-            /* ✅ FIXED: Raised higher (25% from top) */
-            top: 15%;
-            left: 0;
-            width: 100%;
+            /* ✅ FIXED: Set top to 18% (between 15-20) */
+            top: 18%; 
+            left: -5%; /* Slightly wider to accommodate tilt */
+            width: 110%;
             height: 400px; 
-            z-index: 1; /* Sits behind Hero Content (z-index 10) */
-            opacity: 0.25; /* Dimmed slightly more so text pops */
+            z-index: 1;
+            opacity: 0.25; 
             pointer-events: none;
-            /* ✅ FIXED: Removed rotation to prevent cuts */
-            transform: rotate(-5deg)
-            overflow: hidden; 
+            /* ✅ FIXED: Re-added tilt */
+            transform: rotate(-5deg);
         }
 
         .slider-row {
             display: flex;
             width: 100%;
             overflow: hidden;
-            margin-bottom: 20px; /* Increased gap between rows */
+            margin-bottom: 20px;
         }
 
         .slide-track {
             display: flex;
-            gap: 20px; /* Increased gap between cards */
+            gap: 20px;
             width: max-content;
-            animation: scroll 60s linear infinite; /* Slower, smoother scroll */
+            animation: scroll 60s linear infinite;
         }
 
         .slide-track.reverse {
@@ -243,25 +242,26 @@
         }
 
         .slider-item {
-            width: 140px; /* Slightly larger cards */
+            width: 140px;
             height: 210px;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            background: #111; /* Fallback color */
+            background: #111;
         }
 
         .slider-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: grayscale(20%) brightness(0.8); /* Aesthetic dimming */
+            filter: grayscale(20%) brightness(0.8);
+            /* ✅ FIXED: Removes bottom whitespace/line */
+            display: block; 
         }
 
         .slider-overlay {
             position: absolute;
             inset: 0;
-            /* Stronger fade at top/bottom to blend into page */
             background: linear-gradient(to bottom, #000000 0%, transparent 20%, transparent 80%, #000000 100%);
             z-index: 2;
         }
@@ -278,7 +278,7 @@
         @media (max-width: 768px) {
             .hero-title { font-size: 2.5rem; }
             .btn-group-custom { flex-direction: column; gap: 15px; margin-bottom: 30px; }
-            .slider-section { opacity: 0.15; top: 20%; } 
+            .slider-section { opacity: 0.15; top: 15%; } /* Adjusted for mobile */
             .info-list { grid-template-columns: 1fr; }
             .info-card { padding: 20px; margin: 0 10px; }
         }
@@ -363,9 +363,10 @@
                     </div>
                     {% endfor %}
                     {% if not row1 %}
-                        <div class="slider-item"></div><div class="slider-item"></div>
-                        <div class="slider-item"></div><div class="slider-item"></div>
-                        <div class="slider-item"></div><div class="slider-item"></div>
+                        <div class="slider-item" style="background:#222;"></div>
+                        <div class="slider-item" style="background:#333;"></div>
+                        <div class="slider-item" style="background:#222;"></div>
+                        <div class="slider-item" style="background:#333;"></div>
                     {% endif %}
                 {% endfor %}
             </div>
@@ -380,9 +381,10 @@
                     </div>
                     {% endfor %}
                     {% if not row2 %}
-                        <div class="slider-item"></div><div class="slider-item"></div>
-                        <div class="slider-item"></div><div class="slider-item"></div>
-                        <div class="slider-item"></div><div class="slider-item"></div>
+                        <div class="slider-item" style="background:#222;"></div>
+                        <div class="slider-item" style="background:#333;"></div>
+                        <div class="slider-item" style="background:#222;"></div>
+                        <div class="slider-item" style="background:#333;"></div>
                     {% endif %}
                 {% endfor %}
             </div>
