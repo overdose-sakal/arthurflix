@@ -156,10 +156,11 @@
 
         /* --- INFO CARD (Glass Textbox) --- */
         .info-card {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            /* ✅ FIXED: Restored high transparency */
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             padding: 30px;
             max-width: 700px;
@@ -211,8 +212,8 @@
         /* --- SLIDER CSS --- */
         .slider-section {
             position: absolute;
-            /* ✅ FIXED: Moved lower to 25% */
-            top: 25%; 
+            /* ✅ FIXED: Lowered to 25% as requested */
+            top: 25%;
             left: -5%; 
             width: 110%;
             height: 400px; 
@@ -247,7 +248,7 @@
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             background: #111;
-            /* ✅ FIXED: These two lines remove the weird bottom line/gap */
+            /* ✅ FIXED: Removes the tiny gap/line at bottom of images */
             font-size: 0;
             line-height: 0;
         }
