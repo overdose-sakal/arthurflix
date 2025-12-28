@@ -59,7 +59,7 @@
             text-align: center;
             padding: 20px;
             position: relative;
-            z-index: 10; /* Keep text above slider */
+            z-index: 10;
         }
 
         /* Ambient Glow */
@@ -90,7 +90,7 @@
             font-size: 1.2rem;
             color: #a0a0a0;
             max-width: 600px;
-            margin: 0 auto 40px;
+            margin: 0 auto 30px;
             opacity: 0;
             animation: slideUp 0.8s 0.2s ease-out forwards;
         }
@@ -112,6 +112,7 @@
             display: flex;
             gap: 20px;
             justify-content: center;
+            margin-bottom: 40px;
             opacity: 0;
             animation: slideUp 0.8s 0.4s ease-out forwards;
         }
@@ -146,30 +147,68 @@
             color: white;
         }
 
-        .tech-note {
-            margin-top: 50px;
-            font-size: 0.85rem;
-            color: #555;
+        /* --- NEW TRANSPARENT INFO SECTION --- */
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: left;
             opacity: 0;
-            animation: fadeIn 1s 0.8s ease-out forwards;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            border-top: 1px solid #222;
-            padding-top: 20px;
+            animation: fadeIn 1s 0.6s ease-out forwards;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.9rem;
+            color: #cccccc;
+            line-height: 1.5;
+        }
+
+        .info-item i {
+            color: var(--secondary-accent);
+            font-size: 1.1rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .info-item strong {
+            color: white;
+            font-weight: 600;
+        }
+        
+        .info-item a {
+            color: var(--secondary-accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--secondary-accent);
         }
 
         /* --- SLIDER CSS --- */
         .slider-section {
             position: absolute;
-            bottom: -50px; /* Tucked slightly below/behind */
+            bottom: -50px;
             left: 0;
             width: 100%;
             height: 350px;
-            z-index: 1; /* Behind Hero Content (z-index 10) */
-            opacity: 0.4; /* Dimmed so it doesn't distract */
-            transform: rotate(-5deg) scale(1.1); /* Slanted effect */
-            pointer-events: none; /* Make non-clickable */
+            z-index: 1;
+            opacity: 0.4;
+            transform: rotate(-5deg) scale(1.1);
+            pointer-events: none;
         }
 
         .slider-row {
@@ -202,10 +241,9 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: grayscale(40%); /* Subtle aesthetic */
+            filter: grayscale(40%);
         }
 
-        /* Gradient Overlay to fade edges */
         .slider-overlay {
             position: absolute;
             inset: 0;
@@ -215,7 +253,7 @@
 
         @keyframes scroll {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); } /* Move half-way because we duplicate content */
+            100% { transform: translateX(-50%); }
         }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -224,8 +262,10 @@
 
         @media (max-width: 768px) {
             .hero-title { font-size: 2.5rem; }
-            .btn-group-custom { flex-direction: column; gap: 15px; }
-            .slider-section { opacity: 0.2; } /* Dim more on mobile */
+            .btn-group-custom { flex-direction: column; gap: 15px; margin-bottom: 30px; }
+            .slider-section { opacity: 0.2; }
+            .info-list { grid-template-columns: 1fr; }
+            .info-card { padding: 20px; margin: 0 10px; }
         }
     </style>
 </head>
@@ -239,7 +279,7 @@
     </nav>
 
     <div class="hero-container">
-        <div>
+        <div style="width: 100%; max-width: 800px;">
             <div class="price-tag">
                 <i class="bi bi-tag-fill me-2"></i>Premium plans starting ₹10/mo
             </div>
@@ -247,7 +287,7 @@
             <h1 class="hero-title">
                 Stream Unlimited<br>
                 <span style="background: var(--main-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                    Movies & Anime
+                    Shows & Anime
                 </span>
             </h1>
 
@@ -261,10 +301,37 @@
                 <a href="{% url 'register' %}" class="btn-main btn-register">Get Started</a>
             </div>
 
-            <div class="tech-note">
-                <i class="bi bi-info-circle me-1"></i>
-                For the best streaming experience for TV Shows, we recommend using 
-                <strong class="text-white">Brave Browser</strong> or <strong class="text-white">Firefox + uBlock Origin</strong>.
+            <div class="info-card">
+                <ul class="info-list">
+                    <li class="info-item">
+                        <i class="bi bi-coin"></i>
+                        <span>
+                            <strong>Server Maintenance Fee:</strong><br>
+                            A nominal ₹10/month charge helps keep the platform running smooth and ad-free.
+                        </span>
+                    </li>
+                    <li class="info-item">
+                        <i class="bi bi-translate"></i>
+                        <span>
+                            <strong>Audio & Languages:</strong><br>
+                            Streaming defaults to English/Japanese. Download the file to access other tracks (e.g., Hindi).
+                        </span>
+                    </li>
+                    <li class="info-item">
+                        <i class="bi bi-key-fill"></i>
+                        <span>
+                            <strong>Get Access:</strong><br>
+                            Message <strong>Admin (@sakal)</strong> on <a href="https://guchat.netlify.app" target="_blank">GuChat</a> to purchase your membership key.
+                        </span>
+                    </li>
+                    <li class="info-item">
+                        <i class="bi bi-shield-check"></i>
+                        <span>
+                            <strong>Ad-Free Streaming:</strong><br>
+                            Use <strong class="text-white">Brave</strong> or <strong class="text-white">Firefox + uBlock Origin</strong> to block 3rd-party pop-ups.
+                        </span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
