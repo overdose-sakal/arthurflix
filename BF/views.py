@@ -675,3 +675,31 @@ from django.contrib.auth.decorators import login_required
 
 # Update your movie_detail view to include visit tracking
 # Here's an example of what it should look like:
+
+
+# ✅ NEW: Landing Page View
+# BF/views.py
+
+# ... existing imports ...
+from movies.models import Movies # Ensure this is imported
+
+def landing_page(request):
+    """
+    Renders landing page for guests with a preview of recent content.
+    """
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    
+    # Fetch last 20 movies
+    recent_movies = Movies.objects.all().order_by('-upload_date')[:20]
+    
+    # Split into two rows (0-10 and 10-20)
+    # We convert to list to allow indexing in the template if needed
+    movie_list = list(recent_movies)
+    row1 = movie_list[:10]
+    row2 = movie_list[10:20]
+
+    return render(request, 'landing.html', {
+        'row1': row1, 
+        'row2': row2
+    })

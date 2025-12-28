@@ -24,6 +24,7 @@ from .views import (
     # episode_list_view,        # ⬅️ NEW: For the list of episodes
     stream_movie_view,
     series_stream_page,
+    landing_page,
 )
 
 from django.http import HttpResponse
@@ -51,7 +52,11 @@ urlpatterns = [
     path("movies/", include("movies.urls")),
 
     # Website pages
-    path("", Home, name="home"), 
+    path("", landing_page, name="home"), 
+
+    # ✅ MOVED: Old Home (Dashboard) is now at /dashboard/
+    # The landing_page view will redirect logged-in users here automatically
+    path("dashboard/", Home, name="dashboard"),
     path("admin/", admin.site.urls),
     path("movie/<slug:slug>/", Movie, name="movie_detail"), 
     path("category/<str:category>/", views.category_filter, name="category_filter"),
