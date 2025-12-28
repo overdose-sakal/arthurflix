@@ -156,8 +156,8 @@
 
         /* --- INFO CARD (Glass Textbox) --- */
         .info-card {
-            /* ✅ FIXED: Restored high transparency */
-            background: rgba(255, 255, 255, 0.03); 
+            /* ✅ FIXED: Restored Glass Effect */
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -212,7 +212,6 @@
         /* --- SLIDER CSS --- */
         .slider-section {
             position: absolute;
-            /* ✅ FIXED: Lowered to 25% as requested */
             top: 25%;
             left: -5%; 
             width: 110%;
@@ -247,8 +246,10 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            background: #111;
-            /* ✅ FIXED: Removes the tiny gap/line at bottom of images */
+            
+            /* ✅ FIXED: Set background to transparent to remove the grey line */
+            background: transparent; 
+            
             font-size: 0;
             line-height: 0;
         }
