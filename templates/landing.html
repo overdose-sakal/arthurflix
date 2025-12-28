@@ -61,7 +61,7 @@
             text-align: center;
             padding: 40px 20px 100px 20px; 
             position: relative;
-            z-index: 10; 
+            z-index: 10; /* Ensures text is above slider */
         }
 
         /* Ambient Glow */
@@ -156,7 +156,7 @@
 
         /* --- INFO CARD (Glass Textbox) --- */
         .info-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.03); /* Glass Effect */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -211,6 +211,7 @@
         /* --- SLIDER CSS --- */
         .slider-section {
             position: absolute;
+            /* ✅ FIXED: Set to 25% */
             top: 25%;
             left: -5%; 
             width: 110%;
@@ -243,33 +244,30 @@
             width: 140px;
             height: 210px;
             border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             
             /* ✅ CRITICAL FIXES FOR THE LINE */
-            background: transparent; 
-            overflow: hidden;
-            
-            /* 1. Hardware acceleration fixes jagged edges */
-            transform: translateZ(0); 
-            -webkit-transform: translateZ(0);
-            
-            /* 2. Fixes spacing issues */
-            font-size: 0;
+            /* 1. Kills text whitespace */
+            font-size: 0; 
             line-height: 0;
-            
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            /* 2. Sets background to black (same as body) so gaps are invisible */
+            background: #000000; 
+            /* 3. Hardware acceleration for smoother edges */
+            transform: translateZ(0); 
         }
 
         .slider-item img {
-            /* 3. Scale up slightly to cover sub-pixel gaps */
+            /* 4. Over-scale to cover sub-pixel gaps */
             width: 101%;
             height: 101%;
-            
-            /* 4. Shift slightly to center the over-scaled image */
+            /* 5. Center the over-scaled image */
             transform: translate(-0.5%, -0.5%);
+            /* 6. Force block display to remove baseline gap */
+            display: block; 
             
             object-fit: cover;
             filter: grayscale(20%) brightness(0.8);
-            display: block; 
         }
 
         .slider-overlay {
