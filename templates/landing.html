@@ -24,11 +24,18 @@
             background-color: var(--bg-deep);
             color: var(--text-main);
             font-family: 'Outfit', sans-serif;
-            height: 100vh;
-            overflow: hidden;
+            
+            /* ✅ FIXED: Changed height to min-height to allow scrolling */
+            min-height: 100vh; 
+            
+            /* ✅ FIXED: Changed overflow to auto (allows vertical scroll) but keeps horizontal hidden */
+            overflow-x: hidden; 
+            overflow-y: auto;
+
             display: flex;
             flex-direction: column;
             position: relative;
+            padding-bottom: 300px; /* ✅ FIXED: Added space at bottom for the slider so text isn't covered */
         }
 
         /* Navbar */
@@ -57,7 +64,7 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px; /* Increased padding */
             position: relative;
             z-index: 10;
         }
@@ -74,6 +81,7 @@
             transform: translate(-50%, -50%);
             z-index: -1;
             animation: pulseGlow 5s infinite alternate;
+            pointer-events: none;
         }
 
         .hero-title {
@@ -112,7 +120,7 @@
             display: flex;
             gap: 20px;
             justify-content: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px; /* Added spacing */
             opacity: 0;
             animation: slideUp 0.8s 0.4s ease-out forwards;
         }
@@ -147,19 +155,20 @@
             color: white;
         }
 
-        /* --- NEW TRANSPARENT INFO SECTION --- */
+        /* --- INFO CARD (Glass Textbox) --- */
         .info-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
-            padding: 25px;
+            padding: 30px;
             max-width: 700px;
-            margin: 0 auto;
+            margin: 0 auto 20px auto; /* Ensure margin at bottom */
             text-align: left;
             opacity: 0;
             animation: fadeIn 1s 0.6s ease-out forwards;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
 
         .info-list {
@@ -168,7 +177,7 @@
             margin: 0;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
 
         .info-item {
@@ -266,6 +275,7 @@
             .slider-section { opacity: 0.2; }
             .info-list { grid-template-columns: 1fr; }
             .info-card { padding: 20px; margin: 0 10px; }
+            body { padding-bottom: 200px; }
         }
     </style>
 </head>
@@ -287,7 +297,7 @@
             <h1 class="hero-title">
                 Stream Unlimited<br>
                 <span style="background: var(--main-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                    Shows & Anime
+                    Movies & Anime
                 </span>
             </h1>
 
