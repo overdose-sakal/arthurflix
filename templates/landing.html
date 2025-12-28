@@ -24,16 +24,12 @@
             background-color: var(--bg-deep);
             color: var(--text-main);
             font-family: 'Outfit', sans-serif;
-            
-            /* ✅ Scrollable but fits viewport nicely */
-            min-height: 100vh; 
-            overflow-x: hidden; 
+            min-height: 100vh;
+            overflow-x: hidden;
             overflow-y: auto;
-
             display: flex;
             flex-direction: column;
             position: relative;
-            /* ✅ FIXED: Removed the huge padding that was pushing the slider down */
             padding-bottom: 0; 
         }
 
@@ -41,7 +37,7 @@
         .navbar {
             padding: 20px 0;
             background: transparent;
-            z-index: 20; /* Ensure nav stays on top */
+            z-index: 20; 
         }
         .navbar-brand {
             display: flex;
@@ -63,9 +59,9 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 40px 20px 100px 20px; /* Added bottom padding to separate content from slider visual */
+            padding: 40px 20px 100px 20px; 
             position: relative;
-            z-index: 10;
+            z-index: 10; /* Ensures text is above slider */
         }
 
         /* Ambient Glow */
@@ -91,20 +87,23 @@
             margin-bottom: 20px;
             opacity: 0;
             animation: slideUp 0.8s ease-out forwards;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8); /* Added shadow for readability over slider */
         }
 
         .hero-desc {
             font-size: 1.2rem;
-            color: #a0a0a0;
+            color: #d0d0d0; /* Slightly brighter for readability */
             max-width: 600px;
             margin: 0 auto 30px;
             opacity: 0;
             animation: slideUp 0.8s 0.2s ease-out forwards;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
         }
 
         .price-tag {
             display: inline-block;
             background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px); /* Blur behind tag */
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 8px 20px;
             border-radius: 50px;
@@ -130,10 +129,11 @@
             font-weight: 700;
             text-decoration: none;
             transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
         }
 
         .btn-login {
-            background: transparent;
+            background: rgba(0, 0, 0, 0.4);
             border: 2px solid var(--secondary-accent);
             color: white;
         }
@@ -156,20 +156,20 @@
 
         /* --- INFO CARD (Glass Textbox) --- */
         .info-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.6); /* Darker bg for readability */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 30px;
             max-width: 700px;
-            margin: 0 auto;
+            margin: 0 auto 20px auto;
             text-align: left;
             opacity: 0;
             animation: fadeIn 1s 0.6s ease-out forwards;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             position: relative; 
-            z-index: 15; /* Ensure text is clickable */
+            z-index: 15;
         }
 
         .info-list {
@@ -211,30 +211,30 @@
         /* --- SLIDER CSS --- */
         .slider-section {
             position: absolute;
-            /* ✅ FIXED: Set bottom to 0 to align with bottom of page */
-            bottom: 0; 
+            /* ✅ FIXED: Raised higher (25% from top) */
+            top: 25%;
             left: 0;
             width: 100%;
-            height: 350px;
-            z-index: 1;
-            opacity: 0.4;
-            transform: rotate(-5deg) scale(1.1);
+            height: 400px; 
+            z-index: 1; /* Sits behind Hero Content (z-index 10) */
+            opacity: 0.25; /* Dimmed slightly more so text pops */
             pointer-events: none;
-            overflow: hidden; /* Ensure no scrollbars from rotation */
+            /* ✅ FIXED: Removed rotation to prevent cuts */
+            overflow: hidden; 
         }
 
         .slider-row {
             display: flex;
             width: 100%;
             overflow: hidden;
-            margin-bottom: 15px;
+            margin-bottom: 20px; /* Increased gap between rows */
         }
 
         .slide-track {
             display: flex;
-            gap: 15px;
+            gap: 20px; /* Increased gap between cards */
             width: max-content;
-            animation: scroll 40s linear infinite;
+            animation: scroll 60s linear infinite; /* Slower, smoother scroll */
         }
 
         .slide-track.reverse {
@@ -242,24 +242,26 @@
         }
 
         .slider-item {
-            width: 120px;
-            height: 180px;
-            border-radius: 10px;
+            width: 140px; /* Slightly larger cards */
+            height: 210px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            background: #111; /* Fallback color */
         }
 
         .slider-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: grayscale(40%);
+            filter: grayscale(20%) brightness(0.8); /* Aesthetic dimming */
         }
 
         .slider-overlay {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle, rgba(0,0,0,0) 0%, #000000 90%);
+            /* Stronger fade at top/bottom to blend into page */
+            background: linear-gradient(to bottom, #000000 0%, transparent 20%, transparent 80%, #000000 100%);
             z-index: 2;
         }
 
@@ -275,7 +277,7 @@
         @media (max-width: 768px) {
             .hero-title { font-size: 2.5rem; }
             .btn-group-custom { flex-direction: column; gap: 15px; margin-bottom: 30px; }
-            .slider-section { opacity: 0.2; height: 300px; } /* Slightly smaller on mobile */
+            .slider-section { opacity: 0.15; top: 20%; } 
             .info-list { grid-template-columns: 1fr; }
             .info-card { padding: 20px; margin: 0 10px; }
         }
@@ -360,10 +362,9 @@
                     </div>
                     {% endfor %}
                     {% if not row1 %}
-                        <div class="slider-item" style="background:#222;"></div>
-                        <div class="slider-item" style="background:#333;"></div>
-                        <div class="slider-item" style="background:#222;"></div>
-                        <div class="slider-item" style="background:#333;"></div>
+                        <div class="slider-item"></div><div class="slider-item"></div>
+                        <div class="slider-item"></div><div class="slider-item"></div>
+                        <div class="slider-item"></div><div class="slider-item"></div>
                     {% endif %}
                 {% endfor %}
             </div>
@@ -378,10 +379,9 @@
                     </div>
                     {% endfor %}
                     {% if not row2 %}
-                        <div class="slider-item" style="background:#222;"></div>
-                        <div class="slider-item" style="background:#333;"></div>
-                        <div class="slider-item" style="background:#222;"></div>
-                        <div class="slider-item" style="background:#333;"></div>
+                        <div class="slider-item"></div><div class="slider-item"></div>
+                        <div class="slider-item"></div><div class="slider-item"></div>
+                        <div class="slider-item"></div><div class="slider-item"></div>
                     {% endif %}
                 {% endfor %}
             </div>
